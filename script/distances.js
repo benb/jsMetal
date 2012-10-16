@@ -76,12 +76,16 @@ function getDistances(homSetsA, homSetsB, doEvo, gapsHere,G){
 			
 	
 					seqDist[hom][i]+=charDist[hom][i][j];
+
 			}
 			
 			
 			seqDist[hom][i]/= G.origLengths[i];
 			alnDist[hom]+=seqDist[hom][i]*G.origLengths[i];
 			
+                               var message = " metric " + (POS+doEvo-hom+1) + " / " + (POS+doEvo+1)
+                               var message = message  + " :: sequence " + (i+1) + " / " + G.sequenceNumber 
+                               postMessage(JSON.stringify({"type":"intermediate","msg":message}));
 		}
 		
 		alnDist[hom]/=allChars;
@@ -123,7 +127,11 @@ function getDistances(homSetsA, homSetsB, doEvo, gapsHere,G){
 		
 		seqDist[SSP][i]=1-(seqIntersection/seqUnion);
 		
+                var message = " metric " + (POS+doEvo+1) + " / " + (POS+doEvo+1)
+                var message = message  + " :: sequence " + (i+1) + " / " + G.sequenceNumber 
+                postMessage(JSON.stringify({"type":"intermediate","msg":message}));
 	}
+        postMessage(JSON.stringify({"type":"intermediate","msg":"Finishing distances"}));
 	alnDist[SSP] = 1-(alnIntersection/alnUnion);
 
 		

@@ -40,6 +40,8 @@ function process() {
 	//hide error box if it was present
 	$("#errorBox").css("display","none");
 	
+        $("#dialogtext").html("Calculation of homology sets");
+        $("#dialog").dialog("open");
 	G.doEvo = 0;
 	
 	
@@ -126,6 +128,7 @@ function process() {
 }
 function process2(){
 
+        $("#dialogtext").html("Calculation of distances");
 		var homSetsA = alnAresults[0];
 		var gapsA = alnAresults[1];
 		var homSetsB = alnBresults[0];
@@ -141,12 +144,18 @@ function process2(){
                 var distWorker = new Worker("script/distances.js");
                 distWorker.onmessage = function(e){
                         var ans = JSON.parse(e.data);
-                        if (ans.type=="error"){
-                                error(ans.msg);
-                                return;
-                        }else {
-                                distances=ans.distances;
-                                process3();
+                        switch(ans.type){
+                                case "error":
+                                        error(ans.msg);
+                                        return;
+                                case "intermediate":
+                                        //console.log(ans.msg);
+                                        $("#dialogtext").html(ans.msg);
+                                        break;
+                                case "success":
+                                        $("#dialogtext").html("Performing visualisation");
+                                        distances=ans.distances;
+                                        process3();
                         }
 
                 }
@@ -322,6 +331,7 @@ function process3(){
 			})
 	}
 	
+        $("#dialog").dialog("close");
 	$("#homologyType").change(function () {
 			
 			homType=parseInt($(this).val());

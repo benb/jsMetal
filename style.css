@@ -146,3 +146,16 @@ span.centralChar{border-left:5px solid black; border-right:5px solid black;paddi
 span.clickable {cursor: pointer;}
 
 span.clickable:hover{background-color:rgba(0,0,0,1) !important; color:white;opacity:1.0}
+.ui-dialog-titlebar-close {
+        visibility: hidden;
+}
+#dialog{
+        text-align:center;
+}
+#dspinner{
+        width:100%;
+        display:block;
+        height:100%;
+        padding-left:50%;
+        padding-top:3em;
+}
