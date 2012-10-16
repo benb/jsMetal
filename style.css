@@ -37,7 +37,7 @@ a:hover { color: #036; }
  */
 
 #visualiser{
-	white-space:nowrap;width:auto;margin:0px;height:auto;overflow:hidden;font-size:12px;
+	white-space:nowrap;width:100%;margin-right:5px;margin-left:5px;height:auto;overflow:hidden;font-size:12px;
 	background-color: white;
 	border-style:dotted;
 	border-width:2px;
@@ -87,7 +87,6 @@ textarea.alnInput{
 	float:right;
 	}
 #visbox{
-
 	float:right;
 	}
 	

@@ -36,7 +36,7 @@
 	
 	
 	<div id="controlPanel" style="display:none;">
-		<div id="homologyPanel">
+		<div id="homologyPanel" style="display:inline; float:left;">
 			<p>Homology type: 
 			<select name="homologyType" id="homologyType" autocomplete="off">
 				<option name="homologyOption" id="ssp" value="0" selected="selected">Symmetrised sum-of-pairs</option>
@@ -44,8 +44,8 @@
 				<option name="homologyOption" id="pos" value="2">Homology distance with gaps labelled by position</option>
 				<option name="homologyOption" id="evol" disabled="disabled" value="3" />(no Newick tree provided)</option>
 			</select></p>
-			</div>
-		<div id="distanceVisualizationPanel" style="display:none;">
+		</div>
+		<div id="distanceVisualizationPanel" style="display:none; float:left;">
 			<p>Distance visualization scheme: 
 			<select name="distanceVisualizationType" id="distanceVisualizationType" autocomplete="off">
 				<option name="distanceVisualizationOption" id="noDistance" selected="selected" value="2">Simple colours</option>
@@ -54,7 +54,10 @@
 				<option name="distanceVisualizationOption" id="diffOpacity" value="1" >Fade close characters</option>
 			</select></p>
 		</div>
-		<label><input type="checkbox" name="button" value="true" id="showCharDists" autocomplete="off"/>Display individual character distances (CSV)</label>
+                <div style="display:inline;">
+		<button type="button" name="button" id="showCharDists">Display individual character distances (CSV)</button>
+		<button type="button" name="button" id="showSeqDists">Display sequence distances</button>
+                </div>
 	</div>
 	
 	<div id="input"><h3>Alignment 1</h3>

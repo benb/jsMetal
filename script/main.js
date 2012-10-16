@@ -110,7 +110,7 @@ function process() {
 	$("#instructions").remove();
 	var homType=parseInt($('#homologyType option:selected').val());
 	if(G.visualize){
-		$("#distanceVisualizationPanel").css("display","");
+		$("#distanceVisualizationPanel").css("display","inline");
 		var cssCache=[[],[],[],[]];
 		
 		//create coloured sequences for all homology types
