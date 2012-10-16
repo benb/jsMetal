@@ -7,9 +7,19 @@
 // function getUnion(setA, setB)
 // function tempListMaker(setA,setB)
 
+var SSP = 0;
+var SIM = 1;
+var POS = 2;
+var EVO = 3;
 
 // GETCHARACTERDISTANCE
-function getDistances(homSetsA, homSetsB, doEvo, gapsHere){
+onmessage = function(e){
+        var dat = JSON.parse(e.data);
+        var g = dat.G
+        dist = getDistances(dat.A,dat.B,g.doEvo,dat.gapsHere,g);
+        postMessage(JSON.stringify({"type":"success","distances":dist}));
+}
+function getDistances(homSetsA, homSetsB, doEvo, gapsHere,G){
 	
 	var setSize= G.sequenceNumber - 1;
 	

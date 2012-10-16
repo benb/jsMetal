@@ -137,8 +137,24 @@ function process2(){
 		for(var j=0; j < sharedLength;j++){
 			gapsHere[j]=(gapsA[j] && gapsB[j]);
 		}
+
+                var distWorker = new Worker("script/distances.js");
+                distWorker.onmessage = function(e){
+                        var ans = JSON.parse(e.data);
+                        if (ans.type=="error"){
+                                error(ans.msg);
+                                return;
+                        }else {
+                                distances=ans.distances;
+                                process3();
+                        }
+
+                }
+                distWorker.postMessage(JSON.stringify({'A':homSetsA,'B':homSetsB,'gapsHere':gapsHere,'G':G}));
+		//distances=getDistances(homSetsA,homSetsB,G.doEvo,gapsHere);
+}
+function process3(){
 		
-		distances=getDistances(homSetsA,homSetsB,G.doEvo,gapsHere);
 
 
 	G.visualize=$("#visualize:checked").val();
