@@ -295,16 +295,14 @@ function process() {
 		});
 	
 	
-	$("#showCharDists").change(function() {
-		G.charDists=$("#showCharDists:checked").val();
-		if(G.charDists){
-			$("body").append(makeCharDist(distances,homType,alnA));
-		}
-		else{
-			$("#chardists").remove();
-			}
-		}
-		);
+	$("#showCharDists").click(function() {
+                var newwindow=window.open('','charDists','height=400,width=400');
+                newwindow.document.write("<html><head>")
+                newwindow.document.write("</head><body><pre>");
+                newwindow.document.write(makeRawCharDist(distances,homType,alnA).join('\n'));
+                newwindow.document.write("</pre></body></html>");
+                newwindow.document.close();
+        });
 	var $output = makeOutput(distances,homType,alnA);
 	$("body").append($output);
 

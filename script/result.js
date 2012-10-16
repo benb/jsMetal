@@ -155,6 +155,20 @@ function makeCharDist(distances,homType,alnA){
 	}
 	return $charDistDiv;
 }
+function makeRawCharDist(distances,homType,alnA){
+	var $charDist=[];
+	for(var i=0;i<G.sequenceNumber;i++){
+		var charDistString=[];
+		charDistString.push(alnA[i].name);
+		for(var j = 0;j<G.origLengths[i];j++){
+			charDistString.push(distances.character[homType][i][j]);
+		}
+		$charDist.push(charDistString);
+	}
+        console.log($charDist);
+	return $charDist;
+}
+
 
 	
 $(window).resize(function() {
