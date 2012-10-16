@@ -307,6 +307,7 @@ function process() {
         });
         $("#showSeqDists").click(function(){
                 var newwindow=window.open('','seqdists','height=600,width=400');
+                var $output = makeOutput(distances,homType,alnA);
                 newwindow.document.write("<html><head></head><body>" + $('<div/>').append($output[1]).html() + "</body></html>");
                 newwindow.document.close();
         });

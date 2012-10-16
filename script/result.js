@@ -167,7 +167,6 @@ function makeRawCharDist(distances,homType,alnA){
 		}
 		$charDist.push(charDistString);
 	}
-        console.log($charDist);
 	return $charDist;
 }
 
