@@ -5,6 +5,9 @@ var SIM = 1;
 var POS = 2;
 var EVO = 3;
 
+//make these global to support web workers
+var alnBresults=[];
+var alnAresults=[];
 
 //Global object (container for a few general features and options that should be easily available)
 var G = {};
@@ -91,12 +94,41 @@ function process() {
 			}
 	
 	
+		END=new Date();
+		console.log(END-START);
+			}
+
+	catch(e)
+	{
+		$("#errorBox").html("<b>ERROR: "+e+"</b>");
+		$("#errorBox").fadeIn();
+		return;
+	}
+	
 		var homSetsA=[];
 		var homSetsB=[];
-			
-		var alnAresults=getHomologySets(alnA,tree,G.doEvo);
-		var alnBresults=getHomologySets(alnB,tree,G.doEvo);
-		
+
+	        
+                var alnAWorker = new Worker("script/homologySets.js");
+                var alnBWorker = new Worker("script/homologySets.js");
+                
+                alnAWorker.onmessage = function(e){
+                        alnAresults=JSON.parse(e.data);
+                        if (alnBresults.length>0){
+                                process2();
+                        }
+                }
+                alnAWorker.postMessage(JSON.stringify({'aln':alnA,'tree':tree,'doEvo':G.doEvo,'seqNum':G.sequenceNumber}));
+                alnBWorker.onmessage = function(e){
+                        alnBresults=JSON.parse(e.data);
+                        if (alnBresults.length>0){
+                                process2();
+                        }
+                }
+                alnBWorker.postMessage(JSON.stringify({'aln':alnB,'tree':tree,'doEvo':G.doEvo,'seqNum':G.sequenceNumber}));
+}
+function process2(){
+
 		var homSetsA = alnAresults[0];
 		var gapsA = alnAresults[1];
 		var homSetsB = alnBresults[0];
@@ -110,17 +142,8 @@ function process() {
 		}
 		
 		distances=getDistances(homSetsA,homSetsB,G.doEvo,gapsHere);
-		END=new Date();
-		console.log(END-START);
-			}
 
-	catch(e)
-	{
-		$("#errorBox").html("<b>ERROR: "+e+"</b>");
-		$("#errorBox").fadeIn();
-		return;
-	}
-	
+
 	G.visualize=$("#visualize:checked").val();
 	
 		
