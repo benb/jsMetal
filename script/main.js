@@ -41,7 +41,6 @@ function process() {
 	$("#errorBox").css("display","none");
 	
 	G.doEvo = 0;
-	var tree = null;
 	
 	
 	
@@ -61,38 +60,13 @@ function process() {
 		G.sequenceNumber = seqDetails[0];
 		G.origLengths = seqDetails[1];
 		//G.origSeqs = seqDetails[2];
-		G.names=nameLookup(alnA);
+		G.names=nameLookup(alnA,G.sequenceNumber);
 		
 		
 		//remove whitespace from newick string input
 		newick_string=$("#newick").val().replace(/\s/g, "");
 		
 		//if there's anything left, it had better be newick tree or we will be very upset.
-		if(newick_string){
-			root=parseNewickString(newick_string);
-			//check if names match those of the sequences
-			treeNames = [];
-			for(var i=0;i<root.length;i++){
-				treeNames.push(root[i].name);
-			}
-			
-			treeNames.sort();
-			for(var i=0;i<alnA.length;i++){
-				if(treeNames[i] != alnA[i].name) { 
-					throw "Names differ in Newick tree and alignments";
-				}
-			}
-			if(treeNames[alnA.length] != undefined){
-				throw "There are more sequences in the Newick tree than in the alignments";
-			}
-			
-			G.doEvo=1;
-			$("#evol").removeAttr("disabled");
-			$("#evol").html("Homology distance with tree-labelled gaps");
-			tree=makeTree(root);
-		
-			}
-	
 	
 		END=new Date();
 		console.log(END-START);
@@ -113,19 +87,42 @@ function process() {
                 var alnBWorker = new Worker("script/homologySets.js");
                 
                 alnAWorker.onmessage = function(e){
-                        alnAresults=JSON.parse(e.data);
+                        var ans = JSON.parse(e.data);
+                        console.log(ans);
+                        if (ans.type=="error"){
+                                $("#errorBox").html("<b>ERROR: "+ans.msg+"</b>");
+                                $("#errorBox").fadeIn();
+                                return;
+                        }else {
+                                console.log("OK");
+                                alnAresults=ans.ans;
+                                console.log(ans.doEvo);
+                                G.doEvo=ans.doEvo;
+                                if (G.doEvo){
+                                        $("#evol").removeAttr("disabled");
+                                        $("#evol").html("Homology distance with tree-labelled gaps");
+                                }
+                        }
                         if (alnBresults.length>0){
                                 process2();
                         }
                 }
-                alnAWorker.postMessage(JSON.stringify({'aln':alnA,'tree':tree,'doEvo':G.doEvo,'seqNum':G.sequenceNumber}));
+                alnAWorker.postMessage(JSON.stringify({'aln':alnA,'tree':newick_string,'doEvo':G.doEvo,'seqNum':G.sequenceNumber}));
                 alnBWorker.onmessage = function(e){
-                        alnBresults=JSON.parse(e.data);
-                        if (alnBresults.length>0){
+                        var ans = JSON.parse(e.data);
+                        console.log(ans);
+                        if (ans.type=="error"){
+                                $("#errorBox").html("<b>ERROR: "+ans.msg+"</b>");
+                                $("#errorBox").fadeIn();
+                                return;
+                        }else {
+                                alnBresults=ans.ans;
+                        }
+                        if (alnAresults.length>0){
                                 process2();
                         }
                 }
-                alnBWorker.postMessage(JSON.stringify({'aln':alnB,'tree':tree,'doEvo':G.doEvo,'seqNum':G.sequenceNumber}));
+                alnBWorker.postMessage(JSON.stringify({'aln':alnB,'tree':newick_string,'doEvo':G.doEvo,'seqNum':G.sequenceNumber}));
 }
 function process2(){
 

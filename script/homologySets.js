@@ -3,9 +3,49 @@ var SSP = 0;
 var SIM = 1;
 var POS = 2;
 var EVO = 3;
+importScripts('newick_parser.js','sequence.js');
+importScripts('http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.3/underscore-min.js');
+
 onmessage = function(e){
         var o = JSON.parse(e.data);
-        getHomologySets(o.aln,o.tree,o.doEvo,o.seqNum);
+        var newick_string = o.tree;
+
+        var tree;
+        var doEvo=0;
+        var alnA = o.aln;
+
+        try{
+                if(newick_string){
+                        root=parseNewickString(newick_string);
+                        //check if names match those of the sequences
+                        treeNames = [];
+                        for(var i=0;i<root.length;i++){
+                                treeNames.push(root[i].name);
+                        }
+
+                        treeNames.sort();
+                        for(var i=0;i<alnA.length;i++){
+                                if(treeNames[i] != alnA[i].name) {
+                                        throw "Names differ in Newick tree and alignments";
+                                }
+                        }
+                        if(treeNames[alnA.length] != undefined){
+                                throw "There are more sequences in the Newick tree than in the alignments";
+                        }
+
+                        doEvo=1;
+                        tree=makeTree(root);
+                }
+        }catch(e){
+                if (e.message){
+                        postMessage(JSON.stringify({'type':'error','msg':e.message}));
+                }else {
+                        postMessage(JSON.stringify({'type':'error','msg':e}));
+                }
+                return;
+        }
+
+        getHomologySets(alnA,tree,doEvo,o.seqNum);
 }
 
 function getHomologySets(aln,tree,doEvo,seqNum){	
@@ -48,7 +88,7 @@ function getHomologySets(aln,tree,doEvo,seqNum){
 		}
 	}
 		
-	postMessage(JSON.stringify([homologySets,gapsHere]));
+	postMessage(JSON.stringify({'type':'success','ans':[homologySets,gapsHere],'doEvo':doEvo}));
 }
 
 
@@ -130,64 +170,4 @@ function shouldBeFlipped(j,aln,seqNum){
 	return flipThem;
 }
 
-function labeller(alignment,tree,doEvo,seqNum){	
-	var index;
-	var nextLabel;
-	var gapsHere=[];
-	for(var i =0; i<seqNum;i++){
-		alignment[i].labeledContent=[];
-	}
-	
-	if(doEvo){
-		evoLabeller(alignment,tree);
-	
-	}
-	
-	for(var i =0; i<seqNum;i++){
-		alignment[i].labeledContent[SSP] = [];
-		alignment[i].labeledContent[SIM] = [];
-		alignment[i].labeledContent[POS] = [];
-		
-		
-		index=0;
-			
-		
-		for(var j=0;j<alignment[i].content.length;j++){
-			
-			if(alignment[i].content[j] != "-"){
-				// Label character and increase index. Using pre-increment on index to start at 1 and thus allow gaps
-				// that appear before any character to be labelled as 0.
-				nextLabel = i + "X" + ++index;
-				
-				alignment[i].labeledContent[SSP].push(nextLabel);
-				alignment[i].labeledContent[SIM].push(nextLabel);
-				alignment[i].labeledContent[POS].push(nextLabel);
-				
-				if(doEvo){
-				
-					alignment[i].labeledContent[EVO][j]=nextLabel;
-				}
-				
-				
-			
-			}
-		
-			else{
-				//gapsHere[j]=true;
-				// Do not label gaps
-				alignment[i].labeledContent[SSP].push("-");
-				// Label gaps by sequence
-				alignment[i].labeledContent[SIM].push( i + "-");
-				// Label gaps by position
-				alignment[i].labeledContent[POS].push( i + "-" + index);
-				// Add position information to evo-labelled gaps.
-				if(doEvo){
-					alignment[i].labeledContent[EVO][j]=alignment[i].labeledContent[EVO][j].concat(i + "-" + index);
-					}
-				
-			}
-		}
-	}
-	//return gapsHere;
-}
 
