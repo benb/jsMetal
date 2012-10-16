@@ -107,7 +107,8 @@ function makeOutput(distances,homType,alnA){
 }*/
 ////////////////////////////////////
 function makeOutput(distances,homType,alnA){
-	var $outputTable=$("<table/>").attr("id","output");
+	var $outputTable1=$("<table/>").attr("id","output");
+	var $outputTable2=$("<table/>").attr("id","output");
 	
 	if(G.visualize){
 		var $charDistTR=$("<tr/>");
@@ -116,7 +117,7 @@ function makeOutput(distances,homType,alnA){
 		$charDistTR.append($charDistText);
 		$charDistTR.append($charDistValue);
 		
-		$outputTable.append($charDistTR);
+		$outputTable1.append($charDistTR);
 	}
 	
 	var $alnDistTR=$("<tr/>");;
@@ -125,6 +126,7 @@ function makeOutput(distances,homType,alnA){
 	var $alnDistValue=$("<td/>").attr("id","alnDist").text(roundedAlnDistance);
 	$alnDistTR.append($alnDistText);
 	$alnDistTR.append($alnDistValue);
+
 	for(var i=0;i<G.sequenceNumber;i++){
 		var roundedSeqDistance=Math.round((distances.sequence[homType][i]*1000000))/1000000;
 		var $seqDistTR=$("<tr/>");
@@ -132,10 +134,10 @@ function makeOutput(distances,homType,alnA){
 		var $seqDistValue=$("<td/>").attr("id",alnA[i].name+"_dist").text(roundedSeqDistance);
 		$seqDistTR.append($seqDistText);
 		$seqDistTR.append($seqDistValue);
-		$outputTable.append($seqDistTR);
+		$outputTable2.append($seqDistTR);
 	}
-	$outputTable.append($alnDistTR);
-	return $outputTable;
+	$outputTable2.append($alnDistTR);
+	return [$outputTable1,$outputTable2];
 }
 ////////////////////////////////////
 

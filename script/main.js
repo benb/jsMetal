@@ -294,6 +294,8 @@ function process() {
 			
 		});
 	
+	var $output = makeOutput(distances,homType,alnA);
+	$("body").append($output[0]);
 	
 	$("#showCharDists").click(function() {
                 var newwindow=window.open('','charDists','height=400,width=400');
@@ -303,8 +305,12 @@ function process() {
                 newwindow.document.write("</pre></body></html>");
                 newwindow.document.close();
         });
-	var $output = makeOutput(distances,homType,alnA);
-	$("body").append($output);
+        $("#showSeqDists").click(function(){
+                var newwindow=window.open('','seqdists','height=600,width=400');
+                newwindow.document.write("<html><head></head><body>" + $('<div/>').append($output[1]).html() + "</body></html>");
+                newwindow.document.close();
+        });
+        
 
         var resizeBoxes = function(){
                 var height = $(window).height();
