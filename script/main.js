@@ -307,6 +307,20 @@ function process() {
 		);
 	var $output = makeOutput(distances,homType,alnA);
 	$("body").append($output);
+
+        var resizeBoxes = function(){
+                var height = $(window).height();
+                var targetHeight = height/2-80;
+                $("#alnA_seqs").css("height",targetHeight);
+                $("#alnA_names").css("height",targetHeight);
+                $("#alnB_seqs").css("height",targetHeight);
+                $("#alnB_names").css("height",targetHeight);
+        };
+
+        resizeBoxes();
+
+        $(window).resize(resizeBoxes);
+
 	
 	
 	

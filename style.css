@@ -119,7 +119,7 @@ div.names{
 	font-family: monospace;
 	overflow: hidden;
 	width:10em;
-	height:10em;
+	height:20em;
 	/*padding-top:10px;*/
 
 	text-overflow: ellipsis;
@@ -131,7 +131,7 @@ div.names{
 div.seqs{
 	overflow:scroll; 
 	/*overflow-y:auto; */
-	height:10em;
+	height:20em;
 	white-space:nowrap; 
 	font-family:monospace; 
 	/*padding-top:10px;*/
