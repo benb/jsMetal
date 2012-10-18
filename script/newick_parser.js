@@ -156,7 +156,7 @@ function recursiveParse(nodes,newick_string){
 		
 		default:
 			//get the name.
-			var name = newick_string.substring(temp.cursor).match("^[0-9A-Za-z_|]+");
+			var name = newick_string.substring(temp.cursor).match("^[0-9A-Za-z_|/-]+");
 			// some browsers return an array of 1 string instead of a string; this line fixes it.
 			name = name instanceof Array ? name[0] : name;
 			
@@ -279,7 +279,7 @@ function unroot(root){
 //convert array of nodes into tree structure
 function makeTree(nodes){
         var n = getRoot(nodes.map(function(x){return fixNode(nodes,x)}));
-        enforceBi(n);
+        //enforceBi(n);
         return unroot(n);
 }
 
