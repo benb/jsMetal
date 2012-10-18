@@ -37,7 +37,7 @@ a:hover { color: #036; }
  */
 
 #visualiser{
-	white-space:nowrap;width:100%;margin-right:5px;margin-left:5px;height:auto;overflow:hidden;font-size:12px;
+	white-space:nowrap;margin-right:5px;margin-left:5px;height:auto;overflow:hidden;font-size:12px;
 	background-color: white;
 	border-style:dotted;
 	border-width:2px;
@@ -153,9 +153,10 @@ span.clickable:hover{background-color:rgba(0,0,0,1) !important; color:white;opac
         text-align:center;
 }
 #dspinner{
-        width:100%;
-        display:block;
-        height:100%;
         padding-left:50%;
         padding-top:3em;
+}
+
+#alnA_scroll{
+        padding-bottom:1em;
 }
