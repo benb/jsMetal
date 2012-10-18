@@ -109,21 +109,24 @@ function makeOutput(distances,homType,alnA){
 function makeOutput(distances,homType,alnA){
 	var $outputTable1=$("<table/>").attr("id","output");
 	var $outputTable2=$("<table/>").attr("id","output");
+
+	var roundedAlnDistance=Math.round((distances.alignment[homType]*1000000))/1000000;
 	
 	if(G.visualize){
-		var $charDistTR=$("<tr/>");
-		var $charDistText=$("<td />").append("Distance for focused character");
-		var $charDistValue=$("<td />").attr("id","charDist").css("font-weight","bold");
-		$charDistTR.append($charDistText);
-		$charDistTR.append($charDistValue);
-		
+                var $charDistTR=$("<tr />");
+		$charDistTR.append($("<td />").append("Alignment distance:"));
+                $charDistTR.append($("<td />").attr("id","alnDist").text(roundedAlnDistance));
+
+		$charDistTR.append($("<td />").append("Distance for focused character:"));
+                $charDistTR.append($("<td />").attr("id","charDist").css("font-weight","bold"));
+
 		$outputTable1.append($charDistTR);
 	}
 	
-	var $alnDistTR=$("<tr/>");;
-	var $alnDistText=$("<td/>").append("Alignment distance");
-	var roundedAlnDistance=Math.round((distances.alignment[homType]*1000000))/1000000;
-	var $alnDistValue=$("<td/>").attr("id","alnDist").text(roundedAlnDistance);
+	var $alnDistTR=$("<tr/>");
+
+        var $alnDistValue=$("<td />").attr("id","alnDist").text(roundedAlnDistance);
+        var $alnDistText=$("<td />").append("Alignment distance");
 	$alnDistTR.append($alnDistText);
 	$alnDistTR.append($alnDistValue);
 

@@ -12,6 +12,72 @@ var alnAresults=[];
 //Global object (container for a few general features and options that should be easily available)
 var G = {};
 
+$(function(){
+        draganddrop("#alignment1");
+        draganddrop("#alignment2");
+        draganddrop("#newick");
+        //$("#alignment1File").bind('change',[],["#alignment1"],handleFileSelect); //.addEventListener('change', handleFileSelect, false);
+        $("#alignment2File").bind('change',getHandleFileSelect($("#alignment2"))); 
+        $("#alignment1File").bind('change',getHandleFileSelect($("#alignment1"))); 
+        $("#newickFile").bind('change',getHandleFileSelect($("#newick"))); 
+});
+
+function getHandleFileSelect(target){
+        return function(e){
+                handleFileSelect(target,e);
+        }
+        function handleFileSelect(target,e){
+                console.log("HANDLING FILE");
+                e = e.originalEvent || e;
+                var file = e.target.files[0];
+                console.log(e);
+                getFile(file,target);
+        }
+
+
+}
+        
+
+function getFile(file,target){
+        console.log("Attempting to get " + file);
+        var reader = new FileReader();
+        reader.onload=function(theFile){
+                console.log(theFile);
+                target.val(theFile.target.result);
+        };
+        reader.readAsText(file);
+}
+
+
+//drag-and-drop handlers
+function draganddrop(id){
+        var $dropArea = $(id);
+
+$dropArea.bind({
+    dragover: function () {
+        $(this).addClass('hover');
+        return false;
+    },
+    dragend: function () {
+        $(this).removeClass('hover');
+        return false;
+    },
+    drop: function (e) {
+        e = e || window.event;
+        e.preventDefault();
+
+        // jQuery wraps the originalEvent, so we try to detect that here...
+        e = e.originalEvent || e;
+        console.log(e);
+        // Using e.files with fallback because e.dataTransfer is immutable and can't be overridden in Polyfills (http://sandbox.knarly.com/js/dropfiles/).            
+        var files = (e.files || e.dataTransfer.files);
+        getFile(files[0],$dropArea);
+        return false;
+    }
+});
+
+        
+}
 function example1(){
         $.ajax(location.protocol + "//" + location.host + "/" + location.pathname.split('/').slice(0,-1).join("/") +  "/examples/example1a.fa").done(function(data){
                 $("#alignment1").val(data);
@@ -22,6 +88,7 @@ function example1(){
         $.ajax(location.protocol + "//" + location.host + "/" + location.pathname.split('/').slice(0,-1).join("/") +  "/examples/example1.tre").done(function(data){
                 $("#newick").val(data);
         });
+
 }
 function example2(){
         $.ajax(location.protocol + "//" + location.host + "/" + location.pathname.split('/').slice(0,-1).join("/") +  "/examples/example2a.fa").done(function(data){
