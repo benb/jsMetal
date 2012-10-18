@@ -9,11 +9,9 @@ Node.prototype.isLeaf=function(){
         return ((typeof this.children) === 'undefined' || this.children.length==0);
 }
 Node.prototype.descendents=function(){
-        if (this.isLeaf()){
-                return [this.name];
-        }else {
-                return this.children.map(function(x){return x.descendents()}).reduce(function(x,y,a,b){return x.concat(y)})
-        }
+        stack = nodeList(this);
+        var desc= _.filter(stack,function(x){return x.isLeaf()});
+        return _.map(desc,function(x){return x.name});
 }
 Node.prototype.splitsFor=function(gap_leaves){
         if (this.isRoot()){
@@ -222,11 +220,29 @@ function getRoot(nodes){
         }
 }
 
+function nodeList(node){
+        var stack=[];
+        stack.push(node);
+        var pos=0;
+        while (pos < stack.length){
+                if (stack[pos].children){
+                        var children = stack[pos].children;
+                        for (var i=0; i < children.length; i++){
+                                stack.push(children[i]);
+                        }
+                }
+                pos=pos+1;
+        }
+        return stack;
+}
 //enforce a bifurcating tree
 function enforceBi(node){
-        if (node.children){
-                node.children.map(enforceBi);
+        stack=nodeList(node)[0];
+        for (var i=stack.length-1; i >= 0; i--){
+                doEnforceBi(stack[i]);
         }
+}
+function doEnforceBi(node){
         if (node.children){
                 if (node.children.length==2){
                         return;
@@ -279,7 +295,7 @@ function unroot(root){
 //convert array of nodes into tree structure
 function makeTree(nodes){
         var n = getRoot(nodes.map(function(x){return fixNode(nodes,x)}));
-        //enforceBi(n);
+        enforceBi(n);
         return unroot(n);
 }
 
