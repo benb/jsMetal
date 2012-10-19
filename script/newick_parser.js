@@ -125,23 +125,23 @@ function parseNewickString(newick_string){
 	temp.parents = new Array();	//a FILO stack to remeber the parent nodes
 	
 	//calling the function that decides what to do for each character.
-	var nodesArray = recursiveParse(null,newick_string);
+	var nodesArray = basicParse(newick_string);
 	delete temp;
 	return nodesArray;
 }
 		
-// recursiveParse
-// The true parser. It's called recursively and takes the array of nodes (except the first time it's called) and the string to parse.
+// The true parser. Takes the string to parse.
 
-function recursiveParse(nodes,newick_string){
+function basicParse(newick_string){
 	//check if this is the first call, if so declare 'nodes'
 	if(nodes == null) {
 		var nodes = new Array();	
 	}
 	
 	//look at the current character, decide what to do
+        while(newick_string[temp.cursor]!=";"){
 	switch(newick_string[temp.cursor])
-	{
+	   {
 		
 		case "(":
 			temp.cursor++;
@@ -149,13 +149,10 @@ function recursiveParse(nodes,newick_string){
 			break;		
 		case ",":
 			temp.cursor++; 
-			recursiveParse(nodes,newick_string); //recursion	
 			break;		
 		case ")":
 			temp.parents.pop(); //forget latest parent
-			
 			temp.cursor++;
-			recursiveParse(nodes,newick_string); //recursion	
 			break;
 		case ";":
 			//we're done here
@@ -170,7 +167,8 @@ function recursiveParse(nodes,newick_string){
 			temp.cursor += name.length; 
 			newNode(name,nodes,newick_string); //create a new leaf node
 			break;
-	}
+           }
+        }
 	return nodes;
 }
 
@@ -192,7 +190,6 @@ function newNode(name,nodes,newick_string){
 	}
 
 	temp.index++;
-	recursiveParse(nodes,newick_string); //recursion
 	
 }
 
