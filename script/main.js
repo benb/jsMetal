@@ -111,6 +111,12 @@ function process() {
         $("#dialog").dialog("open");
 	G.doEvo = 0;
 	
+		//var newick_string=$("#newick").val().replace(/\s/g, "");
+                //tree = makeTree(parseNewickString(newick_string));
+                //enforceBi(tree);
+
+                //console.log(tree);
+                //console.log(tree.descendents());
 	
 	
 	try{
@@ -154,11 +160,13 @@ function process() {
 	        
                 var alnAWorker = new Worker("script/homologySets.js");
                 var alnBWorker = new Worker("script/homologySets.js");
+
                 
                 alnAWorker.onmessage = function(e){
                         var ans = JSON.parse(e.data);
                         console.log(ans);
                         if (ans.type=="error"){
+                                throw(ans.msg);
                                 $("#errorBox").html("<b>ERROR: "+ans.msg+"</b>");
                                 $("#errorBox").fadeIn();
                                 return;
@@ -181,6 +189,7 @@ function process() {
                         var ans = JSON.parse(e.data);
                         console.log(ans);
                         if (ans.type=="error"){
+                                throw(ans.msg);
                                 $("#errorBox").html("<b>ERROR: "+ans.msg+"</b>");
                                 $("#errorBox").fadeIn();
                                 return;
@@ -213,6 +222,7 @@ function process2(){
                         var ans = JSON.parse(e.data);
                         switch(ans.type){
                                 case "error":
+                                        throw(ans.msg);
                                         error(ans.msg);
                                         return;
                                 case "intermediate":

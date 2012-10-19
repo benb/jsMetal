@@ -45,23 +45,32 @@ function splitsFor(node,gap_leaves){
                 }
 
         }
-        var desc=node.descendents();
-        if (node.isLeaf()){
-                if (_.include(gap_leaves,desc[0])){
-                        return [[desc[0],desc]];
+        var stack = nodeList(node);
+        var splitsForInst = function(n){
+                var desc=n.descendents();
+                var ans;
+                if (n.isLeaf()){
+                        if (_.include(gap_leaves,desc[0])){
+                                ans = [[desc[0],desc]];
+                        }else {
+                                ans = [];
+                        }
                 }else {
-                        return [];
+                        if (_.isEmpty(_.difference(desc,gap_leaves))){
+                                //all my descendents are gaps
+                                ans = _.map(desc,function(x){return [x,desc]});
+                        }else {
+                                //I have non-gap descendents, so go down the tree
+                                ans = _.chain(n.children).map(function(x){return splitsForInst(x);}).flatten(true).value();
+                        }
                 }
-        }else {
-                if (_.isEmpty(_.difference(desc,gap_leaves))){
-                        //all my descendents are gaps
-                        return _.map(desc,function(x){return [x,desc]});
-                }else {
-                        //I have non-gap descendents, so go down the tree
-                        return _.chain(node.children).map(function(x){return splitsFor(x,gap_leaves)}).flatten(true).value();
-                }
+                return ans;
+        };
+        var splitsForInst = _.memoize(splitsForInst);
+        for (var i=stack.length-1; i >=0; i--){
+                splitsForInst(stack[i]);        
         }
-
+        return splitsForInst(node);
 }
 
 
