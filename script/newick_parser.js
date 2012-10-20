@@ -9,9 +9,22 @@ Node.prototype.isLeaf=function(){
         return ((typeof this.children) === 'undefined' || this.children.length==0);
 }
 Node.prototype.descendents=function(){
-        stack = nodeList(this);
-        var desc= _.filter(stack,function(x){return x.isLeaf()});
-        return _.map(desc,function(x){return x.name});
+        try{
+                var stack;
+                stack = nodeList(this);
+                var desc=[];
+                for (i=0; i < stack.length; i++){
+                        if (stack[i].isLeaf()){
+                                desc.push(stack[i].name);
+                        }
+                }
+                return desc;
+        }catch (e){
+                throw("WTF!");
+        }
+
+        //    var desc= _.filter(stack,function(x){return x.isLeaf()});
+        //        return _.map(desc,function(x){return x.name});
 }
 Node.prototype.splitsFor=function(gap_leaves){
         if (this.isRoot()){
@@ -26,55 +39,77 @@ Node.prototype.splitsFor=function(gap_leaves){
 //to a node that represents the split where the 1<->0 transition responsible for
 //the leaf node state, iff the leaf node is in the 0 state.
 function splitsForRoot(root,gap_leaves){
-        var ans=splitsFor(root,gap_leaves);
+        var ans=splitsForX(root,gap_leaves);
         return _.reduce(ans,function(h,kv){h[kv[0]]=kv[1]; return h;},new Object()) 
 }
 //returns an array of format [[leaf_name,node],[leaf_name,node]..]
 //where leaf_name is one of the names specified in gap_leaves
 //and node is the ancestral location of the 1<->0 transition that 
 //left this node in state 0 inferred by Dollo parsimony.
-function splitsFor(node,gap_leaves){
-        if (node.isRoot()){
-                var allgappedchildren = _.filter(node.children,function(x){return _.isEmpty(_.difference(x.descendents(),gap_leaves))});
-                if (allgappedchildren.length==2){
-                        //handle special case of root
-                        alldesc = _.chain(allgappedchildren).map(function(x){return x.descendents()}).flatten(true).value();
-                        left = _.chain(allgappedchildren).map(function(x){return x.descendents()}).flatten(true).map(function(x){return [x,alldesc]}).value();
-                        remaining = _.difference(node.children,allgappedchildren)[0];
-                        return left.concat(splitsFor(remaining,gap_leaves));
-                }
 
-        }
-        var stack = nodeList(node);
-        var splitsForInst = function(n){
-                var desc=n.descendents();
-                var ans;
-                if (n.isLeaf()){
-                        if (_.include(gap_leaves,desc[0])){
-                                ans = [[desc[0],desc]];
-                        }else {
-                                ans = [];
+
+function splitsForX(root,gap_leaves){
+        var goodNodes = new Object();
+        var gapL = new Object();
+        var descNames = new Object();
+        var stack = nodeList(root).reverse();
+        _.each(stack,function(x){
+                var a;
+                        a = x.descendents();
+                try{
+                        descNames[x.id]=a;
+                }catch(e){
+                        throw(a);
+                }
+        });
+        _.each(gap_leaves,function(x){
+                gapL[x]=1;
+        });
+
+        for (var i=0; i < stack.length; i++){ 
+                var node = stack[i];
+                if (!node.children || node.children.length==0){
+                        if (gapL[node.name]==1){
+                                goodNodes[node.id]=1;
                         }
                 }else {
-                        if (_.isEmpty(_.difference(desc,gap_leaves))){
-                                //all my descendents are gaps
-                                ans = _.map(desc,function(x){return [x,desc]});
-                        }else {
-                                //I have non-gap descendents, so go down the tree
-                                ans = _.chain(n.children).map(function(x){return splitsForInst(x);}).flatten(true).value();
+                        var good=true;
+                        
+                        _.each(node.children,function(x){
+                                if (!goodNodes[x.id]){
+                                        good=false;
+                                }
+                        });
+                        if (good){
+                                _.each(node.children,function(x){
+                                        delete goodNodes[x.id];
+                                });
+                                goodNodes[node.id]=1;
+                        }
+
+                }
+        }
+        var ans = [];
+        var finNodes = _.filter(stack,function(x){
+                return goodNodes[x.id];
+        });
+
+        _.each(finNodes,function(x){
+                //special handling for root
+                var desc = descNames[x.id];
+                if (x.parent.id==root.id){
+                        firstLevel =  _.chain(goodNodes).keys.filter(function(y){return (y.parent==root && x!=y)}).value();
+                        while (firstLevel.length>0){
+                                desc=desc.concat(descNames[firstLevel.pop().id]);
                         }
                 }
-                return ans;
-        };
-        var splitsForInst = _.memoize(splitsForInst);
-        for (var i=stack.length-1; i >=0; i--){
-                splitsForInst(stack[i]);        
-        }
-        return splitsForInst(node);
+                //make the list
+                _.each(desc,function(x){
+                        ans.push([x,desc]);
+                });
+        });
+        return ans;
 }
-
-
-
 
 
 
@@ -302,6 +337,17 @@ function unroot(root){
 function makeTree(nodes){
         var n = getRoot(nodes.map(function(x){return fixNode(nodes,x)}));
         enforceBi(n);
-        return unroot(n);
+        n=unroot(n);
+        return numberNodes(n);
+}
+
+function numberNodes(n){
+        stack = nodeList(n);
+        var id=0;
+        _.each(stack,function(x){
+                x.id=id;
+                id++;
+        });
+        return n;
 }
 
