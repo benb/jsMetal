@@ -181,7 +181,7 @@ function process() {
                                 }
                         }
                         if (alnBresults.length>0){
-                                process2();
+                                _.defer(process2());
                         }
                 }
                 alnAWorker.postMessage(JSON.stringify({'aln':alnA,'tree':newick_string,'doEvo':G.doEvo,'seqNum':G.sequenceNumber}));
@@ -197,7 +197,7 @@ function process() {
                                 alnBresults=ans.ans;
                         }
                         if (alnAresults.length>0){
-                                process2();
+                                _.defer(process2());
                         }
                 }
                 alnBWorker.postMessage(JSON.stringify({'aln':alnB,'tree':newick_string,'doEvo':G.doEvo,'seqNum':G.sequenceNumber}));
@@ -232,7 +232,7 @@ function process2(){
                                 case "success":
                                         $("#dialogtext").html("Performing visualisation");
                                         distances=ans.distances;
-                                        process3();
+                                        _.defer(process3());
                         }
 
                 }
