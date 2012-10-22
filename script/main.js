@@ -405,9 +405,13 @@ function process3(){
 				
 				});
 			})
+                _.defer(function(){
+                        $("#distanceVisualizationType").change();
+                });
+
 	}
-	
-        $("#dialog").dialog("close");
+       	
+        _.defer(function(){$("#dialog").dialog("close");});
 	$("#homologyType").change(function () {
 			
 			homType=parseInt($(this).val());
