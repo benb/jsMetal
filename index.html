@@ -15,7 +15,7 @@
 
 	
 	
-	<title>LIGHT METAL &mdash; MetAl alignment distance metrics in HTML5</title>
+	<title>webMetAl &mdash; MetAl alignment distance metrics in pure JavaScript</title>
 	
 		
 </head>
@@ -76,7 +76,7 @@
 		
 
 	<div id="header">
-                <span id="title"><span id="progname"> LIG<span style="color:red;">HT</span> <span style="color:red;">M</span>ETA<span style="color:red;">L</span> &mdash;</span> MetAl alignment distance metrics in HTML5 </span>
+                <span id="title"><span id="progname"> webMetAl &mdash;</span> MetAl alignment distance metrics in pure JavaScript </span>
                 <span style="float:right;"><button onClick="if(confirm('Really reset?')){window.location.reload(false);}"/>Reset</span>
 
 	</div>
@@ -96,18 +96,18 @@
 		<div id="homologyPanel" style="display:inline; float:left;">
 			<p style="display:inline;">Homology type: 
 			<select name="homologyType" id="homologyType" autocomplete="off">
-				<option name="homologyOption" id="ssp" value="0" selected="selected">Symmetrised sum-of-pairs</option>
+				<option name="homologyOption" id="ssp" value="0">Symmetrised sum-of-pairs</option>
 				<option name="homologyOption" id="simple" value="1">Simple homology distance</option>
-				<option name="homologyOption" id="pos" value="2">Homology distance with gaps labelled by position</option>
+				<option name="homologyOption" id="pos" value="2" selected="selected">Homology distance with gaps labelled by position (recommended)</option>
 				<option name="homologyOption" id="evol" disabled="disabled" value="3" />(no Newick tree provided)</option>
 			</select></p>
                         <div id="distanceVisualizationPanel" style="display:none; float:left;">
                                 <p>Distance visualisation scheme: 
                                 <select name="distanceVisualizationType" id="distanceVisualizationType" autocomplete="off">
-                                        <option name="distanceVisualizationOption" id="noDistance" selected="selected" value="2">Simple colours</option>
-                                        <option name="distanceVisualizationOption" id="redfade" value="3">255 Shades of Red</option>
+                                        <option name="distanceVisualizationOption" id="redfade" value="3" selected="selected">255 Shades of Red</option>
                                         <option name="distanceVisualizationOption" id="sameOpacity" value="0">Fade distant characters</option>
                                         <option name="distanceVisualizationOption" id="diffOpacity" value="1" >Fade close characters</option>
+                                        <option name="distanceVisualizationOption" id="noDistance" value="2">Simple colours (distances not shown)</option>
                                 </select></p>
                         </div>
                         <div style="display:inline;">
