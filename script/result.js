@@ -133,8 +133,8 @@ function makeVisualiser($alnASequences,$alnBSequences,alnA,alnB){
 	$alnB_NamesDiv.append($("<div>&nbsp;</div>").css("height", scrollbarWidth()));
 	
 	//scrollGroup <div/>s serve to allow syncronized vertical scrolling
-	var $alnA_scrollGroup=$("<div/>").append($alnA_NamesDiv,$alnASequences).attr("id","alnA_scroll");
-	var $alnB_scrollGroup=$("<div/>").append($alnB_NamesDiv,$alnBSequences).attr("id","alnB_scroll");
+	var $alnA_scrollGroup=$("<div/>").append($alnA_NamesDiv,$alnASequences).attr("id","alnA_scroll").addClass("scrollbox");
+	var $alnB_scrollGroup=$("<div/>").append($alnB_NamesDiv,$alnBSequences).attr("id","alnB_scroll").addClass("scrollbox");
         var $between=$("<span />").attr("id","alnA_sparkline").css("height","40px").css("width",$alnASequences.width()).css("float","right");
         $between = $("<div />").css("width","100%").css("overflow","hidden").css("display","block").append($between);
 
