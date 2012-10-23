@@ -131,9 +131,12 @@ function makeVisualiser($alnASequences,$alnBSequences,alnA,alnB){
 	var $alnA_scrollGroup=$("<div/>").append($alnA_NamesDiv,$alnASequences).attr("id","alnA_scroll");
 	var $alnB_scrollGroup=$("<div/>").append($alnB_NamesDiv,$alnBSequences).attr("id","alnB_scroll");
         var $between=$("<span />").attr("id","aln1_sparkline").css("height","40px").css("width",$alnASequences.width()).css("float","right");
-        $between = $("<div />").css("width","100%").css("overflow","hidden").css("display","block").append($between);
+        $between = $("<div />").css("width","90%").css("overflow","hidden").css("display","block").append($between);
+
+        var $end=$("<span />").attr("id","aln2_sparkline").css("height","40px").css("width",$alnASequences.width()).css("float","right");
+        $end = $("<div />").css("width","90%").css("overflow","hidden").css("display","block").append($end);
 	
-	$visualiserDiv.append($alnA_scrollGroup,$between,$alnB_scrollGroup);
+	$visualiserDiv.append($alnA_scrollGroup,$between,$alnB_scrollGroup,$end);
 	
 	return $visualiserDiv;
 	
@@ -232,14 +235,10 @@ function makeRawCharDist(distances,homType,alnA){
 }
 function makeRawColumnDist(distances,homType,alnA){
         var $colDist=[];
-        console.log("A");
         for (var i=0; i < alnA[0].content.length; i++){
-                console.log("B");
                 $colDist[i]=0.0;
         }
-        console.log("C");
         for (var j=0; j < alnA.length; j++){
-                console.log("D");
                 var id=0;
                 var seq=alnA[j].content
                 for (var i=0; i < seq.length; i++){
@@ -280,6 +279,7 @@ function applyColumnDist(colDist,alnAView,target,width,clickReceiver){
         }
         target.css("width",width+"px");
         barWidth=(width / colDist.length) - 2;
+        console.log(barWidth);
         target.sparkline(colDist,{type:'bar',height:"30px",chartRangeMax:1.0,barWidth:barWidth,barSpacing:2,colorMap:map});
         target.bind('sparklineClick',clickReceiver)
 }

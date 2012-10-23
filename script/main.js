@@ -13,9 +13,11 @@ var alnAF;
 var alnBF;//functions for rewriting the CSS on the alignments
 
 var padChars = 20;
-var colDist;
+var colDistA;
+var colDistB;
 var sparkLineClickA;
 var sparkLineClickB;
+var homType;
 
 //Global object (container for a few general features and options that should be easily available)
 var G = {};
@@ -259,7 +261,7 @@ function process3(){
 	
 	$("#input").remove();
 	$("#instructions").remove();
-	var homType=parseInt($('#homologyType option:selected').val());
+	homType=parseInt($('#homologyType option:selected').val());
 	if(G.visualize){
 		$("#distanceVisualizationPanel").css("display","inline");
 		var cssCache=[[],[],[],[]];
@@ -301,9 +303,7 @@ function process3(){
 		var startScroll=(parseInt(0.5*divWidth/charWidth))*charWidth;
 		$("#alnA_seqs").scrollLeft(startScroll);
 		$("#alnB_seqs").scrollLeft(startScroll);
-                colDist = makeRawColumnDist(distances,homType,alnA);
-                applyColumnDist(colDist,$("#alnA_seqs"),$("#aln1_sparkline"),$("#alnA_seqs").width(),sparkLineClickA);
-		
+                		
 		// alnXPositionOf array indicates the position j of character number i in the true sequence in alignment X
 		// alnXCharacterAt array indicates what character i of the true sequence is at position number j in alignment X
 		// yes, each pair of arrays is complementary
@@ -321,43 +321,47 @@ function process3(){
 		var oldCentral="";
 		var focusSeq=0;
 		var oldFocusSeq=focusSeq;
+                var cGapsA=cumulativeGaps(alnA);
+                var cGapsB=cumulativeGaps(alnB);
 		
+                sparkLineClickA = function(event){
+                        central = event.sparklines[0].getCurrentRegionFields()[0].offset;
+                        central = central-cGapsA[focusSeq][central];
+                        clickChar();
+                }
+                sparkLineClickB = function(event){
+                        central = event.sparklines[0].getCurrentRegionFields()[0].offset;
+                        central = central-cGapsB[focusSeq][central];
+                        clickChar();
+                }
+                recalculateSparklines();
+                redisplaySparklines();
+                var clickChar=function(){
+                        $("#alnA"+"_"+oldFocusSeq+"_"+oldCentral).removeClass("centralChar");
+                        $("#alnB"+"_"+oldFocusSeq+"_"+oldCentral).removeClass("centralChar");
+
+                        oldFocusSeq=focusSeq;
+
+                        $("#alnA_seqs").scrollLeft(alnAPositionOf[focusSeq][central]*charWidth);
+                        $("#alnB_seqs").scrollLeft(alnBPositionOf[focusSeq][central]*charWidth);
+
+                        oldCentral=central;
+
+                        $("#charDist").text(distances.character[homType][focusSeq][central]);
+                        $("#alnA"+"_"+focusSeq+"_"+central).addClass("centralChar");
+                        $("#alnB"+"_"+focusSeq+"_"+central).addClass("centralChar");
+                }
 		$("#alnA_seqs").bind('click', function(event) {
 		
 			focusSeq = $(event.target).closest("div").index();
 			central = alnACharacterAt[focusSeq][$(event.target).closest("span").index() - padChars];
-			$("#alnA"+"_"+oldFocusSeq+"_"+oldCentral).removeClass("centralChar");
-			$("#alnB"+"_"+oldFocusSeq+"_"+oldCentral).removeClass("centralChar");
-			
-			oldFocusSeq=focusSeq;
-			
-			$("#alnA_seqs").scrollLeft(alnAPositionOf[focusSeq][central]*charWidth);
-			$("#alnB_seqs").scrollLeft(alnBPositionOf[focusSeq][central]*charWidth);
-	
-			oldCentral=central;
-			
-			$("#charDist").text(distances.character[homType][focusSeq][central]);
-			$("#alnA"+"_"+focusSeq+"_"+central).addClass("centralChar");
-			$("#alnB"+"_"+focusSeq+"_"+central).addClass("centralChar");
+                        clickChar();
 		});
 	
 		$("#alnB_seqs").bind('click', function(event) {
-			
 			focusSeq = $(event.target).closest("div").index();
 			central = alnBCharacterAt[focusSeq][$(event.target).closest("span").index() - padChars];
-			$("#alnA"+"_"+oldFocusSeq+"_"+oldCentral).removeClass("centralChar");
-			$("#alnB"+"_"+oldFocusSeq+"_"+oldCentral).removeClass("centralChar");
-			
-			oldFocusSeq=focusSeq;
-			
-			$("#alnA_seqs").scrollLeft(alnAPositionOf[focusSeq][central]*charWidth);
-			$("#alnB_seqs").scrollLeft(alnBPositionOf[focusSeq][central]*charWidth);
-	
-			oldCentral=central;
-			
-			$("#charDist").text(distances.character[homType][focusSeq][central]);
-			$("#alnA"+"_"+focusSeq+"_"+central).addClass("centralChar");
-			$("#alnB"+"_"+focusSeq+"_"+central).addClass("centralChar");
+                        clickChar();
 		});
 	
 		$("#alnA_seqs").scroll(function() { 
@@ -375,7 +379,7 @@ function process3(){
 			$("#alnA"+"_"+focusSeq+"_"+central).addClass("centralChar");
 			$("#alnB_seqs").scrollLeft(alnBPositionOf[focusSeq][central]*charWidth);
 			$("#alnB"+"_"+focusSeq+"_"+central).addClass("centralChar");
-                        applyColumnDist(colDist,$("#alnA_seqs"),$("#aln1_sparkline"),$("#alnA_seqs").width(),sparkLineClickA);
+                        redisplaySparklines();
 		});
 		
 		$("#alnB_seqs").scroll(function() { 
@@ -455,6 +459,8 @@ function process3(){
 					cssCache[homType][visType]=transparentAminoCSS(distances.character[homType],visType);
 				}
 				changeDistanceVisualization(cssCache[homType][visType]);
+                                recalculateSparklines();
+                                redisplaySparklines();
 			}
 			
 			if(G.charDists){
@@ -486,22 +492,46 @@ function process3(){
 
         var resizeBoxes = function(){
                 var height = $(window).height();
-                var targetHeight = height/2-80;
+                var targetHeight = height/2-120;
                 $("#alnA_seqs").css("height",targetHeight);
                 $("#alnA_names").css("height",targetHeight);
                 $("#alnB_seqs").css("height",targetHeight);
                 $("#alnB_names").css("height",targetHeight);
+                redisplaySparklines();
         };
 
         resizeBoxes();
 
         $(window).resize(resizeBoxes);
 
-	
-	
-	
+}
 
+function cumulativeGaps(aln){
+        var ans = [];
+        for (var i=0; i < aln.length; i++){
+                ans[i]=[];
+                if (aln[i].content[0]=="-"){
+                        ans[i][0]=1;
+                }else {
+                        ans[i][0]=0;
+                }
+                for (var j=1; j < aln[i].content.length; j++){
+                        if (aln[i].content[j]=="-"){
+                                ans[i][j]=ans[i][j-1]+1;
+                        }else {
+                                ans[i][j]=ans[i][j-1];
+                        }
+                }
+        }
+        return ans;
+}
 
-	
-	
+function recalculateSparklines(){
+                colDistA = makeRawColumnDist(distances,homType,alnA);
+                colDistB = makeRawColumnDist(distances,homType,alnB);
+
+}
+function redisplaySparklines(){
+                applyColumnDist(colDistA,$("#alnA_seqs"),$("#aln1_sparkline"),$("#alnA_seqs").width(),sparkLineClickA);
+                applyColumnDist(colDistB,$("#alnB_seqs"),$("#aln2_sparkline"),$("#alnB_seqs").width(),sparkLineClickB);
 }
