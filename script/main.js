@@ -532,6 +532,6 @@ function recalculateSparklines(){
 
 }
 function redisplaySparklines(){
-                applyColumnDist(colDistA,$("#alnA_seqs"),$("#aln1_sparkline"),$("#alnA_seqs").width(),sparkLineClickA);
-                applyColumnDist(colDistB,$("#alnB_seqs"),$("#aln2_sparkline"),$("#alnB_seqs").width(),sparkLineClickB);
+                applyColumnDist(colDistA,$("#alnA_seqs"),$("#alnA_sparkline"),$("#alnA_seqs").width(),sparkLineClickA);
+                applyColumnDist(colDistB,$("#alnB_seqs"),$("#alnB_sparkline"),$("#alnB_seqs").width(),sparkLineClickB);
 }
