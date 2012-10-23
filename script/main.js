@@ -12,6 +12,11 @@ var alnAresults=[];
 var alnAF;
 var alnBF;//functions for rewriting the CSS on the alignments
 
+var padChars = 20;
+var colDist;
+var sparkLineClickA;
+var sparkLineClickB;
+
 //Global object (container for a few general features and options that should be easily available)
 var G = {};
 
@@ -285,17 +290,19 @@ function process3(){
 		var charWidth =  getCharWidth();
 		
 		//add padding to each end of sequences such that both first and last characters can be displayed in centre of  visualiser
-		var padChars=parseInt(0.5*divWidth/charWidth)
 		var padding = charPadding(padChars);
 		for(var i=0;i<G.sequenceNumber;i++){
 			$(".seq_"+i).prepend(padding);
 			$(".seq_"+i).append(padding);
 		}
+
 		
 		//make initial scroll position feel natural by showing start of alignment on the left of the display
 		var startScroll=(parseInt(0.5*divWidth/charWidth))*charWidth;
 		$("#alnA_seqs").scrollLeft(startScroll);
 		$("#alnB_seqs").scrollLeft(startScroll);
+                colDist = makeRawColumnDist(distances,homType,alnA);
+                applyColumnDist(colDist,$("#alnA_seqs"),$("#aln1_sparkline"),$("#alnA_seqs").width(),sparkLineClickA);
 		
 		// alnXPositionOf array indicates the position j of character number i in the true sequence in alignment X
 		// alnXCharacterAt array indicates what character i of the true sequence is at position number j in alignment X
@@ -368,6 +375,7 @@ function process3(){
 			$("#alnA"+"_"+focusSeq+"_"+central).addClass("centralChar");
 			$("#alnB_seqs").scrollLeft(alnBPositionOf[focusSeq][central]*charWidth);
 			$("#alnB"+"_"+focusSeq+"_"+central).addClass("centralChar");
+                        applyColumnDist(colDist,$("#alnA_seqs"),$("#aln1_sparkline"),$("#alnA_seqs").width(),sparkLineClickA);
 		});
 		
 		$("#alnB_seqs").scroll(function() { 
