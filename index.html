@@ -37,6 +37,7 @@
                                 closeOnEscape: false,
                                 resizable: false
                         });
+                        $("button").button().css("font-size","10pt");
                 });
         </script>
         <script>
@@ -142,9 +143,9 @@
 	<textarea id="newick" class="alnInput" rows="2" cols="120" style="white-space:nowrap; font-type:monospace;" wrap="off">
 </textarea>
 	
-	<input type="button" id="submit" name="button" Value="Run" onClick="process()" />
-	<label id="visbox"><input type="checkbox" name="button" value="true" id="visualize" checked="true" autocomplete="off"/>Generate sequence alignment visualisation</label>
+<button id="submit" onClick="process()">Run</button>
 	
+        <label id="visbox"> <input type="checkbox" name="button" value="true" id="visualize" checked="true" autocomplete="off"/>Generate sequence alignment visualisation</label>
 	</div>
 	
 	<div id="instructions">

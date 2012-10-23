@@ -420,34 +420,38 @@ function process3(){
                         clickChar();
                         focusCentral();
 		});
+                var throttleSpeed=100;
+                var lockA=false;
+                var lockB=false;
 	
-		$("#alnA_seqs").scroll(function() { 
-			$("#alnA_names").scrollTop($("#alnA_seqs").scrollTop());
-			$("#alnB_seqs").scrollTop($("#alnA_seqs").scrollTop());
-			
-			central=alnACharacterAt[focusSeq][Math.round($("#alnA_seqs").scrollLeft()/charWidth)];
-                        clickChar();
+                $("#alnA_seqs").scroll(_.throttle(function(){
+                        if (!lockA){
+                                lockA=true;
+                                $("#alnA_names").scrollTop($("#alnA_seqs").scrollTop());
+                                $("#alnB_seqs").scrollTop($("#alnA_seqs").scrollTop());
+
+                                central=alnACharacterAt[focusSeq][Math.round($("#alnA_seqs").scrollLeft()/charWidth)];
+                                clickChar();
 		       
-			$("#alnB_seqs").scrollLeft(alnBPositionOf[focusSeq][central]*charWidth);
-		});
+                                $("#alnB_seqs").scrollLeft(alnBPositionOf[focusSeq][central]*charWidth);
+                        }
+                        lockA=false;
+
+                },throttleSpeed));
 		
-		$("#alnB_seqs").scroll(function() { 
-			$("#alnB_names").scrollTop($("#alnB_seqs").scrollTop());
-			$("#alnA_seqs").scrollTop($("#alnB_seqs").scrollTop());
+		$("#alnB_seqs").scroll(_.throttle(function() { 
+                        if (!lockB){
+                                lockB=true;
+                                $("#alnB_names").scrollTop($("#alnB_seqs").scrollTop());
+                                $("#alnA_seqs").scrollTop($("#alnB_seqs").scrollTop());
 			
-			central=alnBCharacterAt[focusSeq][Math.round($("#alnB_seqs").scrollLeft()/charWidth)];
+                                central=alnBCharacterAt[focusSeq][Math.round($("#alnB_seqs").scrollLeft()/charWidth)];
+                                clickChar();
 			
-			
-			$("#alnA"+"_"+focusSeq+"_"+oldCentral).removeClass("centralChar");
-			$("#alnB"+"_"+focusSeq+"_"+oldCentral).removeClass("centralChar");
-
-			oldCentral=central;
-
-			$("#charDist").text(distances.character[homType][focusSeq][central]);
-			$("#alnB"+"_"+focusSeq+"_"+central).addClass("centralChar");
-			$("#alnA_seqs").scrollLeft(alnAPositionOf[focusSeq][central]*charWidth);
-			$("#alnA"+"_"+focusSeq+"_"+central).addClass("centralChar");
-		});
+                                $("#alnA_seqs").scrollLeft(alnAPositionOf[focusSeq][central]*charWidth);
+                        }
+                        lockB=false;
+		},throttleSpeed));
 	
 		
 		$("#distanceVisualizationType").change(function () {
