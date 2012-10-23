@@ -187,7 +187,8 @@ function process() {
                                 G.doEvo=ans.doEvo;
                                 if (G.doEvo){
                                         $("#evol").removeAttr("disabled");
-                                        $("#evol").html("Homology distance with tree-labelled gaps");
+                                        $("#evol").html("evol (recommended)");
+                                        $("#pos").html("pos");
                                 }
                         }
                         if (alnBresults.length>0){
@@ -256,8 +257,13 @@ function process3(){
 	
 		
 	$("#controlPanel").css("display","");
-	$("#sameOpacity").html("Fade distant "+G.sequenceType+"s");
-	$("#diffOpacity").html("Fade close "+G.sequenceType+"s");
+        if (G.sequenceType=="amino acid"){
+                $("#sameOpacity").html("Taylor (Fade distant)");
+                $("#diffOpacity").html("Taylor (Fade close)");
+        }else {
+                $("#sameOpacity").html("Fade distant "+G.sequenceType+"s");
+                $("#diffOpacity").html("Fade close "+G.sequenceType+"s");
+        }
 	
 	$("#input").remove();
 	$("#instructions").remove();

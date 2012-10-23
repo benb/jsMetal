@@ -78,7 +78,8 @@
 
 	<div id="header">
                 <span id="title"><span id="progname"> webMetAl &mdash;</span> MetAl alignment distance metrics in pure JavaScript </span>
-                <span style="float:right;"><button onClick="if(confirm('Really reset?')){window.location.reload(false);}"/>Reset</span>
+                <span style="float:right;"><button onClick="if(confirm('Really reset?')){window.location.reload(false);}">Reset</button></span>
+                <span style="float:right;"><button onClick="window.open('faq.html','faq','status=1');">Help</button></span>
 
 	</div>
 	<div id="errorBox" style="padding: 10px; background-color: #FF4444; text-align: center; color: white; display: none;">
@@ -95,25 +96,25 @@
 	
 	<div id="controlPanel" style="display:none;">
 		<div id="homologyPanel" style="display:inline; float:left;">
-			<p style="display:inline;">Homology type: 
+			<p style="display:inline;">Distance: 
 			<select name="homologyType" id="homologyType" autocomplete="off">
-				<option name="homologyOption" id="ssp" value="0">Symmetrised sum-of-pairs</option>
-				<option name="homologyOption" id="simple" value="1">Simple homology distance</option>
-				<option name="homologyOption" id="pos" value="2" selected="selected">Homology distance with gaps labelled by position (recommended)</option>
+				<option name="homologyOption" id="ssp" value="0">SSP</option>
+				<option name="homologyOption" id="simple" value="1">seq</option>
+				<option name="homologyOption" id="pos" value="2" selected="selected">pos (recommended)</option>
 				<option name="homologyOption" id="evol" disabled="disabled" value="3" />(no Newick tree provided)</option>
 			</select></p>
                         <div id="distanceVisualizationPanel" style="display:none; float:left;">
-                                <p>Distance visualisation scheme: 
+                                <p>Colour scheme: 
                                 <select name="distanceVisualizationType" id="distanceVisualizationType" autocomplete="off">
-                                        <option name="distanceVisualizationOption" id="redfade" value="3" selected="selected">255 Shades of Red</option>
-                                        <option name="distanceVisualizationOption" id="sameOpacity" value="0">Fade distant characters</option>
-                                        <option name="distanceVisualizationOption" id="diffOpacity" value="1" >Fade close characters</option>
-                                        <option name="distanceVisualizationOption" id="noDistance" value="2">Simple colours (distances not shown)</option>
+                                        <option name="distanceVisualizationOption" id="diffOpacity" selected="selected" value="1" >Taylor (Fade close)</option>
+                                        <option name="distanceVisualizationOption" id="sameOpacity" value="0">Taylor (Fade distant)</option>
+                                        <option name="distanceVisualizationOption" id="noDistance" value="2">Taylor colours (distances not shown)</option>
+                                        <option name="distanceVisualizationOption" id="redfade" value="3" >White &rarr;  Red</option>
                                 </select></p>
                         </div>
                         <div style="display:inline;">
-                                <button type="button" name="button" id="showCharDists">Display individual character distances (CSV)</button>
-                                <button type="button" name="button" id="showSeqDists">Display sequence distances</button>
+                                <button type="button" name="button" id="showCharDists">Distances per character (as CSV)</button>
+                                <button type="button" name="button" id="showSeqDists">Distances per sequence</button>
                         </div>
 
 		</div>
