@@ -24,7 +24,7 @@ var G = {};
 
 //Internet exploder
 
-   var alertFallback = true;
+   var alertFallback = false;
    if (typeof console === "undefined" || typeof console.log === "undefined") {
      console = {};
      if (alertFallback) {
