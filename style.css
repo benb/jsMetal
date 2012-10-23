@@ -37,12 +37,12 @@ a:hover { color: #036; }
  */
 
 #visualiser{
-	white-space:nowrap;margin-right:5px;margin-left:5px;height:auto;overflow:hidden;font-size:12px;
+	white-space:nowrap;margin-right:1%;margin-left:1%;height:auto;overflow:hidden;font-size:12px;
 	background-color: transparent;
 	border-style:dotted;
 	border-width:2px;
 	border-color:black;
-        width:100%;
+        width:98%;
 }
 
 #chardists{
@@ -171,4 +171,8 @@ span.clickable:hover{background-color:rgba(0,0,0,1) !important; color:white;opac
         margin-right:1em;
         margin-top:0.5em;
         margin-bottom:0.5em;
+}
+
+.name1{
+        background-color:#EEE;
 }

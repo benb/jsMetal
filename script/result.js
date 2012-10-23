@@ -120,8 +120,13 @@ function makeVisualiser($alnASequences,$alnBSequences,alnA,alnB){
 	
 	for(i=0;i< G.sequenceNumber;i++){
 		//populate name
-		$alnA_NamesDiv.append("<div>"+alnA[i].name+"</div>");
-		$alnB_NamesDiv.append("<div>"+alnB[i].name+"</div>");
+                if (i%2==0){
+                        $alnA_NamesDiv.append("<div class='name0'>"+alnA[i].name+"</div>");
+                        $alnB_NamesDiv.append("<div class='name0'>"+alnB[i].name+"</div>");
+                }else {
+                        $alnA_NamesDiv.append("<div class='name1'>"+alnA[i].name+"</div>");
+                        $alnB_NamesDiv.append("<div class='name1'>"+alnB[i].name+"</div>");
+                }
 	}
 	
 	$alnA_NamesDiv.append($("<div>&nbsp;</div>").css("height", scrollbarWidth()));
@@ -131,10 +136,10 @@ function makeVisualiser($alnASequences,$alnBSequences,alnA,alnB){
 	var $alnA_scrollGroup=$("<div/>").append($alnA_NamesDiv,$alnASequences).attr("id","alnA_scroll");
 	var $alnB_scrollGroup=$("<div/>").append($alnB_NamesDiv,$alnBSequences).attr("id","alnB_scroll");
         var $between=$("<span />").attr("id","alnA_sparkline").css("height","40px").css("width",$alnASequences.width()).css("float","right");
-        $between = $("<div />").css("width","90%").css("overflow","hidden").css("display","block").append($between);
+        $between = $("<div />").css("width","100%").css("overflow","hidden").css("display","block").append($between);
 
         var $end=$("<span />").attr("id","alnB_sparkline").css("height","40px").css("width",$alnASequences.width()).css("float","right");
-        $end = $("<div />").css("width","90%").css("overflow","hidden").css("display","block").append($end);
+        $end = $("<div />").css("width","100%").css("overflow","hidden").css("display","block").append($end);
 	
 	$visualiserDiv.append($alnA_scrollGroup,$between,$alnB_scrollGroup,$end);
 	
