@@ -428,12 +428,13 @@ function process3(){
 			
 			homType=parseInt($(this).val());
 			
+                        /*
 			for(var i=0;i<G.sequenceNumber;i++){
 				var roundedSeqDistance=Math.round((distances.sequence[homType][i]*1000000))/1000000;
 				
 				$("#"+alnA[i].name+"_dist").text(roundedSeqDistance);
 				
-			}
+			}*/
 			var roundedAlnDistance=Math.round((distances.alignment[homType]*1000000))/1000000;
 			$("#alnDist").text(roundedAlnDistance);
 			
