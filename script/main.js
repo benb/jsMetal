@@ -22,6 +22,21 @@ var homType;
 //Global object (container for a few general features and options that should be easily available)
 var G = {};
 
+//Internet exploder
+
+   var alertFallback = false;
+   if (typeof console === "undefined" || typeof console.log === "undefined") {
+     console = {};
+     if (alertFallback) {
+         console.log = function(msg) {
+              alert(msg);
+         };
+     } else {
+         console.log = function() {};
+     }
+   }
+
+
 $(function(){
         draganddrop("#alignment1");
         draganddrop("#alignment2");
@@ -360,6 +375,7 @@ function process3(){
                         $("#charDist").text(distances.character[homType][focusSeq][central]);
                         $("#alnA"+"_"+focusSeq+"_"+central).addClass("centralChar");
                         $("#alnB"+"_"+focusSeq+"_"+central).addClass("centralChar");
+                        redisplaySparklines();
                 }
                 var focusCentral=function(){
                         $("#alnA_seqs").scrollLeft(alnAPositionOf[focusSeq][central]*charWidth);
@@ -511,7 +527,22 @@ function process3(){
         resizeBoxes();
 
         $(window).resize(resizeBoxes);
-
+        $("#consensus").on("click",function(){
+                var newwindow=window.open('','consensus','height=400,width=400');
+                newwindow.document.write("<html><head>")
+                newwindow.document.write("</head><body><pre>");
+                for (var i=0; i < alnA.length; i++){
+                       newwindow.document.write(">"+alnA[i].name+"\n"); 
+                       var str=[];
+                       for (var j=0; j < alnA[i].content.length; j++){
+                              if (colDistA[j]==0.0){
+                                      str.push(alnA[i].content[j]);
+                              }
+                       }
+                       newwindow.document.write(str.join("")+"\n");
+                }
+                newwindow.document.write("</pre></body></html>");
+        });
 }
 
 function cumulativeGaps(aln){
@@ -543,3 +574,5 @@ function doRedisplaySparklines(){
                 applyColumnDist(colDistA,$("#alnA_seqs"),$("#alnA_sparkline"),$("#alnA_seqs").width(),sparkLineClickA);
                 applyColumnDist(colDistB,$("#alnB_seqs"),$("#alnB_sparkline"),$("#alnB_seqs").width(),sparkLineClickB);
 }
+
+
