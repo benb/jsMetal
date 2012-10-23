@@ -3,27 +3,15 @@
 //Returns a <div/> for each homology type, containing the sequences where each non-gap character
 //belongs to a CSS class specifying its distance value between 0 and 255.
 
-function colouredSequenceMaker(charDist,alignment,alignmentID){
+function sequenceMaker(alignment,alignmentID){
 	
-	var $sequenceDiv = [];
-	for(var homType = 0; homType<charDist.length;homType++){
 		
-		$sequenceDiv[homType] = $("<div/>").attr("id",alignmentID+"_seqs").addClass("seqs");;
-		
-		var $colouredSeqDivs = [];
-		//character distances converted to a value between 0 and 255, for use in CSS styling
-		var eightBitDistances = [];
-		for(var i=0;i<G.sequenceNumber;i++){
-			eightBitDistances[i]=[];		
-				for(var k=0;k<charDist[homType][i].length;k++){
-					eightBitDistances[i][k] = Math.round(255*charDist[homType][i][k]);
-				}
-		}
+		$sequenceDiv = $("<div/>").attr("id",alignmentID+"_seqs").addClass("seqs");
 		
 		//array of jquery <div/>s for each sequence
 		for(var i=0;i<G.sequenceNumber;i++){
 	
-			$colouredSeqDivs[i] = $("<div/>").addClass("seq_"+i);
+			$colouredSeqDivs = $("<div/>").addClass("seq_"+i);
 					
 			//index for non-gap characters
 			var k=0;
@@ -34,21 +22,89 @@ function colouredSequenceMaker(charDist,alignment,alignmentID){
 							
 				//only non-gap characters have an identity
 				if (alignment[i].content[j] != "-") {
-					$character.attr("id",alignmentID+"_"+i+"_"+k).addClass("dist"+eightBitDistances[i][k]);
-					$character.attr("title",Math.round(charDist[homType][i][k]*1000000)/1000000);
+					$character.attr("id",alignmentID+"_"+i+"_"+k);
 					k++;
 				}
-						
-				$colouredSeqDivs[i].append($character);
+				$colouredSeqDivs.append($character);
 			}
 		
-			$sequenceDiv[homType].append($colouredSeqDivs[i]);
+			$sequenceDiv.append($colouredSeqDivs);
+		}
+	
+		
+
+	return $sequenceDiv;
+}
+
+function colouredCSSMaker(charDist,alignment,alignmentID){
+	
+	var $sequenceDiv = [];
+	for(var homType = 0; homType<charDist.length;homType++){
+		
+		$sequenceDiv[homType] = [];
+		
+		var $colourF = [];
+		//character distances converted to a value between 0 and 255, for use in CSS styling
+		var eightBitDistances = [];
+		for(var i=0;i<G.sequenceNumber;i++){
+			eightBitDistances[i]=[];		
+                        for(var k=0;k<charDist[homType][i].length;k++){
+                                eightBitDistances[i][k] = Math.round(255*charDist[homType][i][k]);
+                        }
+		}
+		
+		//array of jquery <div/>s for each sequence
+		for(var i=0;i<G.sequenceNumber;i++){
+	
+			$colourF[i] = [];
+					
+			//index for non-gap characters
+			var k=0;
+			
+			for(var j = 0;j<alignment[i].content.length;j++){
+                                        if (alignment[i].content[j] != "-"){
+                                                $character = [ eightBitDistances[i][k], Math.round(charDist[homType][i][k]*1000000)/1000000];
+                                                k++;
+                                        }else {
+                                                $character=null;
+                                        }
+				$colourF[i].push($character);
+			}
+		
+			$sequenceDiv[homType].push($colourF[i]);
 		}
 	
 		
 	}
 
 	return $sequenceDiv;
+}
+function applyCSS(alignment,cssData){
+        var i=0; 
+        _.each($(alignment).children("div"),function(x){
+                var j=0;
+                _.each($(x).contents(".clickable"),function(y){
+                        if (cssData[i][j]){
+                                var target = $(y);
+                                //remove old dist classes
+                                _.chain(target.attr("class").split(' ')).filter(function(x){return (x.substring(0,4)=="dist")}).each(function(x){ target.removeClass(x)});
+                                target.addClass("dist"+cssData[i][j][0]);
+                                target.attr("title",cssData[i][j][1]);
+                        }
+                        j++;
+                });
+                i++;
+        });
+        return alignment;
+}
+
+function colouredSequenceMaker(charDist,alignment,alignmentID){
+	
+        var aln = sequenceMaker(alignment,alignmentID);
+        var colourFs = colouredCSSMaker(charDist,alignment,alignmentID);
+        //var colourFs = [1,2,3,4]; 
+        return [aln,colourFs];
+
 }
 
 

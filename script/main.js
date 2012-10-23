@@ -9,6 +9,9 @@ var EVO = 3;
 var alnBresults=[];
 var alnAresults=[];
 
+var alnAF;
+var alnBF;//functions for rewriting the CSS on the alignments
+
 //Global object (container for a few general features and options that should be easily available)
 var G = {};
 
@@ -257,17 +260,26 @@ function process3(){
 		var cssCache=[[],[],[],[]];
 		
 		//create coloured sequences for all homology types
-		var $alnASeqDiv = colouredSequenceMaker(distances.character,alnA,"alnA");
-		var $alnBSeqDiv = colouredSequenceMaker(distances.character,alnB,"alnB");
+		var $alnASeqDivX = colouredSequenceMaker(distances.character,alnA,"alnA");
+		var $alnBSeqDivX = colouredSequenceMaker(distances.character,alnB,"alnB");
+                alnAF = $alnASeqDivX;
+                alnBF = $alnBSeqDivX;
+                var $alnASeqDiv = alnAF[0];
+                var $alnBSeqDiv = alnBF[0];
+
+                
 		
 		
 		var visType=parseInt($('#distanceVisualizationType option:selected').val());
 		
 		//create and append visualiser with initial default homology type
-		var $visualiser = makeVisualiser($alnASeqDiv[homType],$alnBSeqDiv[homType],alnA,alnB);
+		var $visualiser = makeVisualiser($alnASeqDiv,$alnBSeqDiv,alnA,alnB);
 		
 		$("body").append($visualiser);
 		
+                applyCSS(alnAF[0],alnAF[1][homType]);
+                applyCSS(alnBF[0],alnBF[1][homType]);
+
 		//get width of sequence display and characters
 		var divWidth = $("#alnA_seqs").outerWidth();
 		var charWidth =  getCharWidth();
@@ -426,7 +438,9 @@ function process3(){
 			$("#alnDist").text(roundedAlnDistance);
 			
 			if(G.visualize){
-		
+                                console.log("Applying");		
+                                applyCSS(alnAF[0],alnAF[1][homType]);
+                                applyCSS(alnBF[0],alnBF[1][homType]);
 				if(cssCache[homType][visType] == undefined){
 					cssCache[homType][visType] = [];
 					cssCache[homType][visType]=transparentAminoCSS(distances.character[homType],visType);
