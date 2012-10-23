@@ -284,9 +284,8 @@ function applyColumnDist(colDist,alnAView,target,width,clickReceiver){
         }
         target.css("width",width+"px");
         barWidth=(width / colDist.length) - 2;
-        console.log(barWidth);
+        //console.log(barWidth);
         target.sparkline(colDist,{type:'bar',height:"30px",chartRangeMax:1.0,barWidth:barWidth,barSpacing:2,colorMap:map});
-        target.bind('sparklineClick',clickReceiver)
 }
 
 
