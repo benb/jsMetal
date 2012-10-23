@@ -85,7 +85,10 @@ function getDistances(homSetsA, homSetsB, doEvo, gapsHere,G){
 			
                                var message = " metric " + (POS+doEvo-hom+1) + " / " + (POS+doEvo+1)
                                var message = message  + " :: sequence " + (i+1) + " / " + G.sequenceNumber 
-                               postMessage(JSON.stringify({"type":"intermediate","msg":message}));
+                               try{
+                                       postMessage(JSON.stringify({"type":"intermediate","msg":message}));
+                               }catch(e){
+                               }
 		}
 		
 		alnDist[hom]/=allChars;
@@ -129,9 +132,15 @@ function getDistances(homSetsA, homSetsB, doEvo, gapsHere,G){
 		
                 var message = " metric " + (POS+doEvo+1) + " / " + (POS+doEvo+1)
                 var message = message  + " :: sequence " + (i+1) + " / " + G.sequenceNumber 
-                postMessage(JSON.stringify({"type":"intermediate","msg":message}));
+                try{
+                        postMessage(JSON.stringify({"type":"intermediate","msg":message}));
+                }catch(e){
+                }
 	}
-        postMessage(JSON.stringify({"type":"intermediate","msg":"Finishing distances"}));
+        try{
+                postMessage(JSON.stringify({"type":"intermediate","msg":"Finishing distances"}));
+        }catch(e){
+        }
 	alnDist[SSP] = 1-(alnIntersection/alnUnion);
 
 		

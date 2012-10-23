@@ -24,7 +24,7 @@ var G = {};
 
 //Internet exploder
 
-   var alertFallback = false;
+   var alertFallback = true;
    if (typeof console === "undefined" || typeof console.log === "undefined") {
      console = {};
      if (alertFallback) {
@@ -127,7 +127,14 @@ function example2(){
         });
 }
 	
+function supports_web_workers() {
+        return !!window.Worker;
+}
+var useWorkers=supports_web_workers();
 function process() {
+
+        
+
 	START = new Date();
 	//hide error box if it was present
 	$("#errorBox").css("display","none");
@@ -182,7 +189,7 @@ function process() {
 		var homSetsA=[];
 		var homSetsB=[];
 
-	        
+	       if(useWorkers){ 
                 var alnAWorker = new Worker("script/homologySets.js");
                 var alnBWorker = new Worker("script/homologySets.js");
 
@@ -227,6 +234,19 @@ function process() {
                         }
                 }
                 alnBWorker.postMessage(JSON.stringify({'aln':alnB,'tree':newick_string,'doEvo':G.doEvo,'seqNum':G.sequenceNumber}));
+               }else {
+                var ans;
+                _.defer(function(){
+                        ans = performHomologyWork(newick_string,alnA,G.sequenceNumber); 
+                        alnAresults=ans.ans;
+                });
+                _.defer(function(){
+                        ans = performHomologyWork(newick_string,alnB,G.sequenceNumber); 
+                        alnBresults=ans.ans;
+                        doEvo=ans.doEvo;
+                        _.defer(process2);
+                });
+               }
 }
 function process2(){
 
@@ -243,6 +263,7 @@ function process2(){
 			gapsHere[j]=(gapsA[j] && gapsB[j]);
 		}
 
+                if (useWorkers){
                 var distWorker = new Worker("script/distances.js");
                 distWorker.onmessage = function(e){
                         var ans = JSON.parse(e.data);
@@ -262,6 +283,10 @@ function process2(){
                         }
                 }
                 distWorker.postMessage(JSON.stringify({'A':homSetsA,'B':homSetsB,'gapsHere':gapsHere,'G':G}));
+                }else {
+                        distances=getDistances(homSetsA,homSetsB,G.doEvo,gapsHere,G);
+                        _.defer(process3);
+                }
 		//distances=getDistances(homSetsA,homSetsB,G.doEvo,gapsHere);
 }
 function process3(){
