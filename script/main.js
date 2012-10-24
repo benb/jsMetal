@@ -436,14 +436,12 @@ function process3(){
 			focusSeq = $(event.target).closest("div").index();
 			central = alnACharacterAt[focusSeq][$(event.target).closest("span").index() - padChars];
                         clickChar();
-                        focusCentral();
 		});
 	
 		$("#alnB_seqs").bind('click', function(event) {
 			focusSeq = $(event.target).closest("div").index();
 			central = alnBCharacterAt[focusSeq][$(event.target).closest("span").index() - padChars];
                         clickChar();
-                        focusCentral();
 		});
                 var throttleSpeed=100;
                 var lockA=false;
