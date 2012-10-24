@@ -372,8 +372,6 @@ function process3(){
 		var oldFocusSeq=focusSeq;
                 var cGapsA=cumulativeGaps(alnA);
                 var cGapsB=cumulativeGaps(alnB);
-                G.lockA=false;
-                G.lockB=false;
                 var focusCentral=function(){
                         $("#alnA_seqs").scrollLeft(alnAPositionOf[focusSeq][central]*charWidth);
                         $("#alnB_seqs").scrollLeft(alnBPositionOf[focusSeq][central]*charWidth);
@@ -412,8 +410,6 @@ function process3(){
                         $("#alnA"+"_"+focusSeq+"_"+central).addClass("centralChar");
                         $("#alnB"+"_"+focusSeq+"_"+central).addClass("centralChar");
                 }
-                var clickChar=function(){
-                }
 	$("#alnA_seqs").bind('click', function(event) {
 			focusSeq = $(event.target).closest("div").index();
 			central = alnACharacterAt[focusSeq][$(event.target).closest("span").index() - padChars];
@@ -426,43 +422,39 @@ function process3(){
                         clickChar();
 		});
                 var throttleSpeed=500;
-                var lockA=false;
-                var lockB=false;
 	
-                $("#alnA_seqs").scroll(_.throttle(function(){
-                        if (!lockA){
-                                lockA=true;
+                scrollA=_.throttle(function(ev){
+                        console.log("SCROLL A");
                                 $("#alnA_names").scrollTop($("#alnA_seqs").scrollTop());
-                                $("#alnB_seqs").scrollTop($("#alnA_seqs").scrollTop());
                                 var range = visibleRange($("#alnA_seqs"),alnA[0].content.length);
-                                console.log("CHAR " + range);
 
                                 central=alnACharacterAt[focusSeq][Math.round($("#alnA_seqs").scrollLeft()/charWidth)];
                                 clickChar();
 		       
-                                redisplaySparklines();
+                                $("#alnB_seqs").off('scroll');
                                 $("#alnB_seqs").scrollLeft(alnBPositionOf[focusSeq][central]*charWidth);
-                        }
-                        lockA=false;
+                                $("#alnB_seqs").scrollTop($("#alnA_seqs").scrollTop());
+                                redisplaySparklines();
+                                _.defer(function(){ $("#alnB_seqs").on('scroll',scrollB);});
 
-                },throttleSpeed));
+                },throttleSpeed);
 		
-		$("#alnB_seqs").scroll(_.throttle(function(ev) { 
-                        console.log(ev);
-                        if (!lockB){
-                                lockB=true;
+                scrollB=_.throttle(function(ev) { 
+                        console.log("SCROLL B");
                                 $("#alnB_names").scrollTop($("#alnB_seqs").scrollTop());
-                                $("#alnA_seqs").scrollTop($("#alnB_seqs").scrollTop());
 			
                                 central=alnBCharacterAt[focusSeq][Math.round($("#alnB_seqs").scrollLeft()/charWidth)];
                                 clickChar();
 			
-                                redisplaySparklines();
+                                $("#alnA_seqs").off('scroll');
                                 $("#alnA_seqs").scrollLeft(alnAPositionOf[focusSeq][central]*charWidth);
-                        }
-                        lockB=false;
-		},throttleSpeed));
+                                $("#alnA_seqs").scrollTop($("#alnB_seqs").scrollTop());
+                                redisplaySparklines();
+                                _.defer(function(){ $("#alnA_seqs").on('scroll',scrollA);});
+		},throttleSpeed);
 	
+		$("#alnA_seqs").on('scroll',scrollA);
+		$("#alnB_seqs").on('scroll',scrollB);
 		
 		$("#distanceVisualizationType").change(function () {
 			$("#distanceVisualizationType option:selected").each(function () {
