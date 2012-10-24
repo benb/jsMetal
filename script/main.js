@@ -375,23 +375,8 @@ function process3(){
                 G.lockA=false;
                 G.lockB=false;
                 var focusCentral=function(){
-
-                        var width=$("#alnA_seqs").width();
-                        var virtualChar = alnAPositionOf[focusSeq][central];
-                        virtualChar+=padChars;
-                        var totalVirtual=alnA[0].content.length+2*padChars;
-                        
-                        var centralPos = virtualChar/(totalVirtual*charWidth);
-                        var leftPos = centralPos-(width/2);
-
-                        console.log("START " + G.lockA);
-                        G.lockA=G.lockB=true;
-                        console.log("LOCKED " + G.lockA);
-                        $("#alnA_seqs").scrollLeft(leftPos);
-
+                        $("#alnA_seqs").scrollLeft(alnAPositionOf[focusSeq][central]*charWidth);
                         $("#alnB_seqs").scrollLeft(alnBPositionOf[focusSeq][central]*charWidth);
-                        G.lockA=G.lockB=false;
-
                         redisplaySparklines();
                 }
 	
@@ -414,6 +399,7 @@ function process3(){
                 $("#alnB_sparkline").bind('sparklineClick',sparkLineClickB);
                 $("#alnA_sparkline").bind('sparklineClick',sparkLineClickA);
                 var clickChar=function(){
+                        //this sets the focused character to [focusSeq][central]
                         $("#alnA"+"_"+oldFocusSeq+"_"+oldCentral).removeClass("centralChar");
                         $("#alnB"+"_"+oldFocusSeq+"_"+oldCentral).removeClass("centralChar");
 
@@ -425,14 +411,10 @@ function process3(){
                         $("#charDist").text(distances.character[homType][focusSeq][central]);
                         $("#alnA"+"_"+focusSeq+"_"+central).addClass("centralChar");
                         $("#alnB"+"_"+focusSeq+"_"+central).addClass("centralChar");
-                        redisplaySparklines();
                 }
-                var focusCentral=function(){
-                        $("#alnA_seqs").scrollLeft(alnAPositionOf[focusSeq][central]*charWidth);
-                        $("#alnB_seqs").scrollLeft(alnBPositionOf[focusSeq][central]*charWidth);
-                        redisplaySparklines();
+                var clickChar=function(){
                 }
-		$("#alnA_seqs").bind('click', function(event) {
+	$("#alnA_seqs").bind('click', function(event) {
 			focusSeq = $(event.target).closest("div").index();
 			central = alnACharacterAt[focusSeq][$(event.target).closest("span").index() - padChars];
                         clickChar();
@@ -443,7 +425,7 @@ function process3(){
 			central = alnBCharacterAt[focusSeq][$(event.target).closest("span").index() - padChars];
                         clickChar();
 		});
-                var throttleSpeed=100;
+                var throttleSpeed=500;
                 var lockA=false;
                 var lockB=false;
 	
@@ -452,17 +434,21 @@ function process3(){
                                 lockA=true;
                                 $("#alnA_names").scrollTop($("#alnA_seqs").scrollTop());
                                 $("#alnB_seqs").scrollTop($("#alnA_seqs").scrollTop());
+                                var range = visibleRange($("#alnA_seqs"),alnA[0].content.length);
+                                console.log("CHAR " + range);
 
                                 central=alnACharacterAt[focusSeq][Math.round($("#alnA_seqs").scrollLeft()/charWidth)];
                                 clickChar();
 		       
+                                redisplaySparklines();
                                 $("#alnB_seqs").scrollLeft(alnBPositionOf[focusSeq][central]*charWidth);
                         }
                         lockA=false;
 
                 },throttleSpeed));
 		
-		$("#alnB_seqs").scroll(_.throttle(function() { 
+		$("#alnB_seqs").scroll(_.throttle(function(ev) { 
+                        console.log(ev);
                         if (!lockB){
                                 lockB=true;
                                 $("#alnB_names").scrollTop($("#alnB_seqs").scrollTop());
@@ -471,6 +457,7 @@ function process3(){
                                 central=alnBCharacterAt[focusSeq][Math.round($("#alnB_seqs").scrollLeft()/charWidth)];
                                 clickChar();
 			
+                                redisplaySparklines();
                                 $("#alnA_seqs").scrollLeft(alnAPositionOf[focusSeq][central]*charWidth);
                         }
                         lockB=false;
@@ -620,7 +607,7 @@ function cumulativeGaps(aln){
 function recalculateSparklines(){
                 colDistA = makeRawColumnDist(distances,homType,alnA);
                 colDistB = makeRawColumnDist(distances,homType,alnB);
-                redisplaySparklines = _.throttle(doRedisplaySparklines,100);
+                redisplaySparklines = _.throttle(doRedisplaySparklines,1000);
 }
 function doRedisplaySparklines(){
                 applyColumnDist(colDistA,$("#alnA_seqs"),$("#alnA_sparkline"),$("#alnA_seqs").width(),sparkLineClickA);
