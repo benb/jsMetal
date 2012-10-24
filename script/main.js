@@ -385,6 +385,7 @@ function process3(){
                 recalculateSparklines();
                 redisplaySparklines();
 
+                recalculateMinilines();
                 $("#alnB_sparkline").bind('sparklineClick',sparkLineClickB);
                 $("#alnA_sparkline").bind('sparklineClick',sparkLineClickA);
                 var clickChar=function(){
@@ -512,6 +513,7 @@ function process3(){
 				changeDistanceVisualization(cssCache[homType][visType]);
                                 recalculateSparklines();
                                 redisplaySparklines();
+                                recalculateMinilines();
 			}
 			
 			if(G.charDists){
@@ -603,3 +605,14 @@ function doRedisplaySparklines(){
 }
 
 
+function recalculateMinilines(){
+       console.log("Minilines");
+       for (var i=0; i < distances.sequence[homType].length; i++){
+               console.log(i);
+               _.each($(".miniline_"+i),function(x){
+                       $(x).sparkline([distances.sequence[homType][i],1.0],{type:'bullet',height:"auto",performanceColor: '#AAAAAA',disableInteraction:true});
+                       $(x).css("float","right").css("width","40%").css("background-color","inherit").css("padding-left","10%");
+               });
+       }
+
+}

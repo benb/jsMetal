@@ -180,12 +180,25 @@ span.clickable:hover{background-color:rgba(0,0,0,1) !important; color:white;opac
         margin-top:0.5em;
         margin-bottom:0.5em;
 }
-
-.name1{
-        background-color:#EEE;
+.name{
+        background-color:inherit;
+        float:left;
+        width:50%;
+        overflow:hidden;
 }
 .scrollbox{
         border:2px solid black;
         padding:2px;
 }
 
+.row0{
+        background-color:#DDD;
+        display:block;
+        width:100%
+        float:none;
+}
+.row1{
+        display:block;
+        width:100%
+        float:none;
+}
