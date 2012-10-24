@@ -63,10 +63,12 @@ a:hover { color: #036; }
 }
 .ui-widget {
             font-size:0.8em;
-    }
-    #header.ui-widget{
-            font-size:100%;
-    }
+            font-family: 'Cabin', sans-serif;
+}
+.selectBox, .selectBox-dropdown-menu, .selectBox-options{
+            font-family: 'Cabin', sans-serif;
+            font-size:0.8em;
+}
 
 #title{
         background:transparent;
