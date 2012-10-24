@@ -5,7 +5,9 @@
 	<link rel="stylesheet" type="text/css" media="all" href="style.css" />
 	
 	<link rel="stylesheet" type="text/css" id="seqColour" href="./nucleotide.css" /> 
-        <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/smoothness/jquery-ui.css"/>
+        <!--     <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/smoothness/jquery-ui.css"/> -->
+        <link rel="stylesheet" type="text/css" href="http://cdn.wijmo.com/themes/aristo/jquery-wijmo.css"/>
+        
         <link href='http://fonts.googleapis.com/css?family=Vollkorn:400italic,400' rel='stylesheet' type='text/css'>
 
         <link href='http://fonts.googleapis.com/css?family=Cabin:400,600,400italic,600italic' rel='stylesheet' type='text/css'>
@@ -37,7 +39,13 @@
                                 closeOnEscape: false,
                                 resizable: false
                         });
-                        $("button").button().css("font-size","10pt");
+                        $("#help").button({
+                                icons:{
+                                        primary: 'ui-icon-help'
+                                }
+                        });
+                        $("button").button();//.css("font-size","9pt");
+                        $("#doviz").buttonset();//.css("font-size","9pt");
                 });
         </script>
         <script>
@@ -81,7 +89,7 @@
 	<div id="header">
                 <span id="title"><span id="progname"> webMetAl &mdash;</span> MetAl alignment distance metrics in pure JavaScript </span>
                 <span style="float:right;"><button onClick="if(confirm('Really reset?')){window.location.reload(false);}">Reset</button></span>
-                <span style="float:right;"><button onClick="window.open('faq.html','faq','status=1');">Help</button></span>
+                <span style="float:right;"><button onClick="window.open('faq.html','faq','status=1');" id="help">Help</button></span>
 
 	</div>
 	<div id="errorBox" style="padding: 10px; background-color: #FF4444; text-align: center; color: white; display: none;">
@@ -145,7 +153,10 @@
 	
 <button id="submit" onClick="process()">Run</button>
 	
-        <label id="visbox"> <input type="checkbox" name="button" value="true" id="visualize" checked="true" autocomplete="off"/>Generate sequence alignment visualisation</label>
+                <div id="doviz">
+                        <input type="radio" id="radio1" name="radio" /><label for="radio1">Numbers only</label>
+                        <input type="radio" id="radio2" name="radio" checked="checked" /><label for="radio2">Graphical</label>
+                </div>
 	</div>
 	
 	<div id="instructions">

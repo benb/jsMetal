@@ -293,7 +293,7 @@ function process3(){
 		
 
 
-	G.visualize=$("#visualize:checked").val();
+	G.visualize=$("#radio2:checked").val();
 	
 		
 	$("#controlPanel").css("display","");

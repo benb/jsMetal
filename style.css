@@ -62,6 +62,8 @@ a:hover { color: #036; }
         color:#EEE;
         text-shadow: 0px 2px 3px #333;
 }
+#header.button{
+}
 #title{
         background:transparent;
 }
