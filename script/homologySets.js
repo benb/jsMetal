@@ -60,6 +60,9 @@ function performHomologyWork(newick_string,alnA,seqNum){
 
                 doEvo=1;
                 tree=makeTree(root);
+        }else {
+                tree=null;
+                doEvo=0;
         }
         var ans = getHomologySets(alnA,tree,doEvo,seqNum);
         return {'ans':ans,'doEvo':doEvo};
