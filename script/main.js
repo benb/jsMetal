@@ -293,7 +293,7 @@ function process3(){
 		
 
 
-	G.visualize=$("#radio2:checked").val();
+	G.visualize=$("#doviz:checked").val();
 	
 		
 	$("#controlPanel").css("display","");
@@ -388,7 +388,6 @@ function process3(){
                 $("#alnB_sparkline").bind('sparklineClick',sparkLineClickB);
                 $("#alnA_sparkline").bind('sparklineClick',sparkLineClickA);
                 var clickChar=function(){
-                        console.log("clickChar");
                         $("#alnA"+"_"+oldFocusSeq+"_"+oldCentral).removeClass("centralChar");
                         $("#alnB"+"_"+oldFocusSeq+"_"+oldCentral).removeClass("centralChar");
 
@@ -504,7 +503,6 @@ function process3(){
 			$("#alnDist").text(roundedAlnDistance);
 			
 			if(G.visualize){
-                                console.log("Applying");		
                                 applyCSS(alnAF[0],alnAF[1][homType]);
                                 applyCSS(alnBF[0],alnBF[1][homType]);
 				if(cssCache[homType][visType] == undefined){
