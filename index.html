@@ -2,11 +2,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" type="text/css" href="http://cdn.wijmo.com/themes/aristo/jquery-wijmo.css"/>
 	<link rel="stylesheet" type="text/css" media="all" href="style.css" />
 	
 	<link rel="stylesheet" type="text/css" id="seqColour" href="./nucleotide.css" /> 
         <!--     <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/smoothness/jquery-ui.css"/> -->
-        <link rel="stylesheet" type="text/css" href="http://cdn.wijmo.com/themes/aristo/jquery-wijmo.css"/>
         
         <link href='http://fonts.googleapis.com/css?family=Vollkorn:400italic,400' rel='stylesheet' type='text/css'>
 
@@ -44,8 +44,24 @@
                                         primary: 'ui-icon-help'
                                 }
                         });
+                        $("#reset").button({
+                                icons:{
+                                        primary :'ui-icon-arrowrefresh-1-n'
+                                }
+                        });
+
                         $("button").button();//.css("font-size","9pt");
                         $("#doviz").buttonset();//.css("font-size","9pt");
+                        $("input").button();
+                        _.each(["#newickFile","#alignment1File","#alignment2File"],function(b){
+                                console.log(b);
+                                console.log($(b+"Button"));
+                                $(b+"Button").on('click',function(){
+                                        console.log(b);
+                                        $(b).click();
+                                });
+
+                        });
                 });
         </script>
         <script>
@@ -88,7 +104,7 @@
 
 	<div id="header">
                 <span id="title"><span id="progname"> webMetAl &mdash;</span> MetAl alignment distance metrics in pure JavaScript </span>
-                <span style="float:right;"><button onClick="if(confirm('Really reset?')){window.location.reload(false);}">Reset</button></span>
+                <span style="float:right;"><button onClick="if(confirm('Really reset?')){window.location.reload(false);}" id="reset">Reset</button></span>
                 <span style="float:right;"><button onClick="window.open('faq.html','faq','status=1');" id="help">Help</button></span>
 
 	</div>
@@ -139,15 +155,18 @@
         </div>
         
                 <h3>Alignment 1</h3>
-                <input type="file" id="alignment1File" name="file" />
+                <input type="file" id="alignment1File" name="file" class="fileupload" />
+                <button id="alignment1FileButton">Choose local file</button>
                 <textarea id="alignment1" class="alnInput" rows="10" cols="120" wrap="off">
                 </textarea>
 	<h3>Alignment 2</h3>
-        <input type="file" id="alignment2File" name="file" />
+        <input type="file" id="alignment2File" name="file" class="fileupload"/>
+        <button id="alignment2FileButton">Choose local file</button>
 	<textarea id="alignment2"class="alnInput" rows="10" cols="120" wrap="off">
         </textarea>
 	<h3>Newick tree (optional, for calculating tree-based distances)</h3>
-        <input type="file" id="newickFile" name="file" />
+        <input type="file" id="newickFile" name="file" class="fileupload" />
+        <button id="newickFileButton">Choose local file</button>
 	<textarea id="newick" class="alnInput" rows="2" cols="120" style="white-space:nowrap; font-type:monospace;" wrap="off">
 </textarea>
 	

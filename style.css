@@ -52,7 +52,6 @@ a:hover { color: #036; }
 	padding:20px;
         padding-bottom:2px;
         padding-top:4px;
-	font-size:20px;
         font-family: 'Cabin', sans-serif;
         font-weight: bold;
 	height: 2 em;
@@ -62,10 +61,19 @@ a:hover { color: #036; }
         color:#EEE;
         text-shadow: 0px 2px 3px #333;
 }
-#header.button{
-}
+.ui-widget {
+            font-size:0.8em;
+    }
+    #header.ui-widget{
+            font-size:100%;
+    }
+
 #title{
         background:transparent;
+        font-size:16pt;
+}
+.fileupload{
+        display:none;
 }
 #progname{
 	font-size:30px;
