@@ -44,7 +44,7 @@
                         closeOnEscape: false,
                         resizable: false
                      });
-                     $("select").kendoDropDownList();
+                     $("#distanceVisualizationType").kendoDropDownList();
 
 
                         _.each(["#newickFile","#alignment1File","#alignment2File"],function(b){
@@ -135,7 +135,7 @@
                         <div style="display:inline;">
                                 <button type="button" class="k-button" name="button" id="showCharDists">Distances per character (as CSV)</button>
                                 <button type="button" class="k-button" name="button" id="showSeqDists">Distances per sequence</button>
-                                <button type="button" class="k-button" name="button" id="consensus">Strict consensus alignment (fasta)</button>
+                                <button type="button" class="k-button" name="button" id="consensus">Strict consensus alignment</button>
                         </div>
 
 		</div>

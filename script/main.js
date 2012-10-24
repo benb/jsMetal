@@ -13,6 +13,7 @@ var alnAF;
 var alnBF;//functions for rewriting the CSS on the alignments
 
 var padChars = 20;
+var charWidth;
 var colDistA;
 var colDistB;
 var sparkLineClickA;
@@ -211,7 +212,9 @@ function process() {
                                         $("#evol").removeAttr("disabled");
                                         $("#evol").html("evol (recommended)");
                                         $("#pos").html("pos");
+                                        $("#homologyType").val(3);
                                 }
+                                $("#homologyType").kendoDropDownList();
                         }
                         if (alnBresults.length>0){
                                 _.defer(process2);
@@ -335,7 +338,7 @@ function process3(){
 
 		//get width of sequence display and characters
 		var divWidth = $("#alnA_seqs").outerWidth();
-		var charWidth =  getCharWidth();
+		charWidth =  getCharWidth();
 		
 		//add padding to each end of sequences such that both first and last characters can be displayed in centre of  visualiser
 		var padding = charPadding(padChars);
@@ -369,7 +372,29 @@ function process3(){
 		var oldFocusSeq=focusSeq;
                 var cGapsA=cumulativeGaps(alnA);
                 var cGapsB=cumulativeGaps(alnB);
-		
+                G.lockA=false;
+                G.lockB=false;
+                var focusCentral=function(){
+
+                        var width=$("#alnA_seqs").width();
+                        var virtualChar = alnAPositionOf[focusSeq][central];
+                        virtualChar+=padChars;
+                        var totalVirtual=alnA[0].content.length+2*padChars;
+                        
+                        var centralPos = virtualChar/(totalVirtual*charWidth);
+                        var leftPos = centralPos-(width/2);
+
+                        console.log("START " + G.lockA);
+                        G.lockA=G.lockB=true;
+                        console.log("LOCKED " + G.lockA);
+                        $("#alnA_seqs").scrollLeft(leftPos);
+
+                        $("#alnB_seqs").scrollLeft(alnBPositionOf[focusSeq][central]*charWidth);
+                        G.lockA=G.lockB=false;
+
+                        redisplaySparklines();
+                }
+	
                 sparkLineClickA = function(event){
                         central = event.sparklines[0].getCurrentRegionFields()[0].offset;
                         central = central-cGapsA[focusSeq][central];

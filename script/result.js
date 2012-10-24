@@ -262,17 +262,22 @@ function makeVisualColumnDist(distance,homType,alnA,alnAView,target,width){
         var colDist = makeRawColumnDist(distance,homType,alnA);
         applyColumnDist(colDist,alnAView,target,width);
 }
-function applyColumnDist(colDist,alnAView,target,width,clickReceiver){
+function visibleRange(alnAView,columns){
         var left = alnAView.scrollLeft();
         var totalWidth = alnAView[0].scrollWidth;
         var visibleWidth = alnAView.width();
-        totalChars = colDist.length + padChars*2;
+        var totalChars = columns + padChars *2;
         var fractionStart = Math.floor(((left/totalWidth)*totalChars));
         fractionStart=fractionStart-padChars;
-        if (fractionStart<0){fractionStart=0};
         var fractionEnd = Math.floor(((left+visibleWidth)/totalWidth * totalChars));
         fractionEnd=fractionEnd-padChars;
-        if (fractionEnd>colDist){fractionEnd=colDist};
+        if (fractionEnd>columns){fractionEnd=columns};
+        return [fractionStart,Math.floor((fractionStart+fractionEnd)/2),fractionEnd];
+}
+function applyColumnDist(colDist,alnAView,target,width,clickReceiver){
+        var range = visibleRange(alnAView,colDist.length)
+        var fractionStart=range[0];
+        var fractionEnd=range[2];
         var map=[];
         for (var i=0; i < fractionStart; i++){
                 map.push("blue");
