@@ -606,13 +606,15 @@ function doRedisplaySparklines(){
 
 
 function recalculateMinilines(){
+       var t1 = new Date();
        console.log("Minilines");
        for (var i=0; i < distances.sequence[homType].length; i++){
                console.log(i);
-               _.each($(".miniline_"+i),function(x){
-                       $(x).sparkline([distances.sequence[homType][i],1.0],{type:'bullet',height:"auto",performanceColor: '#AAAAAA',disableInteraction:true});
-                       $(x).css("float","right").css("width","40%").css("background-color","inherit").css("padding-left","10%");
-               });
+               var target = $(".miniline_"+i);
+               target.css("width","50%");
+               target.html("<img src='png/"+Math.floor(distances.sequence[homType][i]*100)+".png' title='"+distances.sequence[homType][i]+"' height='10px' style='max-width:100%'/>")
        }
+       var t2 = new Date();
+       console.log(t2-t1);
 
 }

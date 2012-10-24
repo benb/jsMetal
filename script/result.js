@@ -121,13 +121,14 @@ function makeVisualiser($alnASequences,$alnBSequences,alnA,alnB){
 	for(i=0;i< G.sequenceNumber;i++){
 		//populate name
                 if (i%2==0){
-                        $alnA_NamesDiv.append("<div class='row0'><div class='name'>"+alnA[i].name+ "</div><div class='miniline_"+i+ "'></div></div>");
-                        $alnB_NamesDiv.append("<div class='row0'><div class='name'>"+alnB[i].name+ "</div><div class='miniline_"+i+ "'></div></div>");
+                        $alnA_NamesDiv.append("<div class='row0'><div class='name' title='"+alnA[i].name+"'>"+alnA[i].name+ "</div><div class='miniline_"+i+ "'></div></div>");
+                        $alnB_NamesDiv.append("<div class='row0'><div class='name' title='"+alnB[i].name+"'>"+alnB[i].name+ "</div><div class='miniline_"+i+ "'></div></div>");
                 }else {
-                        $alnA_NamesDiv.append("<div class='row1'><div class='name'>"+alnA[i].name+ "</div><div class='miniline_"+i+ "'></div></div>");
-                        $alnB_NamesDiv.append("<div class='row1'><div class='name'>"+alnB[i].name+ "</div><div class='miniline_"+i+ "'></div></div>");
+                        $alnA_NamesDiv.append("<div class='row1'><div class='name' title='"+alnA[i].name+"'>"+alnA[i].name+ "</div><div class='miniline_"+i+ "'></div></div>");
+                        $alnB_NamesDiv.append("<div class='row1'><div class='name' title='"+alnB[i].name+"'>"+alnB[i].name+ "</div><div class='miniline_"+i+ "'></div></div>");
                 }
 	}
+
 	
 	$alnA_NamesDiv.append($("<div>&nbsp;</div>").css("height", scrollbarWidth()));
 	$alnB_NamesDiv.append($("<div>&nbsp;</div>").css("height", scrollbarWidth()));
