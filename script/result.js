@@ -18,7 +18,7 @@ function sequenceMaker(alignment,alignmentID){
 			
 			for(var j = 0;j<alignment[i].content.length;j++){
 				
-				var $character = $("<span/>").text(alignment[i].content[j]).addClass(alignment[i].content[j].toUpper()).addClass("clickable");
+				var $character = $("<span/>").text(alignment[i].content[j]).addClass(alignment[i].content[j].toUpperCase()).addClass("clickable");
 							
 				//only non-gap characters have an identity
 				if (alignment[i].content[j] != "-") {
