@@ -65,7 +65,7 @@ function performHomologyWork(newick_string,alnA,seqNum){
                 doEvo=0;
         }
         var ans = getHomologySets(alnA,tree,doEvo,seqNum);
-        return {'ans':ans,'doEvo':doEvo};
+        return {ans:ans,doEvo:doEvo};
 }
 
 function getHomologySets(aln,tree,doEvo,seqNum){	
@@ -74,6 +74,22 @@ function getHomologySets(aln,tree,doEvo,seqNum){
 	labeller(aln,tree,doEvo,seqNum);
 	var gapsHere=[];
 	var homologySets = [];
+        var innerLoop=function(hom,i,j,jNoGap){
+              //  console.log("set");
+                homologySets[hom][i][jNoGap]=[];
+                for(var k=0;k<aln.length;k++){
+                        if(aln[k].content[j]  == "-"){
+                                gapsHere[jNoGap]=true;
+                        }
+
+                        if(k!=i && aln[k].content[j]){
+
+                                homologySets[hom][i][jNoGap].push(aln[k].labeledContent[hom][j]);
+
+                        }
+                }
+        }
+
 		
 	for(var hom=0;hom<=POS+doEvo;hom++){
 		
@@ -81,26 +97,18 @@ function getHomologySets(aln,tree,doEvo,seqNum){
 		for (var i=0;i<aln.length;i++){
 			homologySets[hom][i]=[];
 			jNoGap=0;
-			
+		 	
 			for ( var j=0;j<aln[i].content.length;j++){
 				
 				if(aln[i].content[j]  != "-"){
-					
-					homologySets[hom][i][jNoGap]=[];
-					for(var k=0;k<aln.length;k++){
-						if(aln[k].content[j]  == "-"){
-							gapsHere[jNoGap]=true;
-						}
-						
-						if(k!=i && aln[k].content[j]){
-							
-							homologySets[hom][i][jNoGap].push(aln[k].labeledContent[hom][j]);
-							
-						}
-					
-					
-					}
-					jNoGap++;
+                                        
+                                        var myH=hom;
+                                        var myI=i;
+                                        var myJ=j;
+                                        var myGap=jNoGap;
+                                        var f = _.bind(innerLoop,{},myH,myI,myJ,myGap)
+                                        _.defer(f);
+                                        jNoGap++;
 				}
 					
 					

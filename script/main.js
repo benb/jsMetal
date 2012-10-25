@@ -23,6 +23,7 @@ var homType;
 //Global object (container for a few general features and options that should be easily available)
 var G = {};
 
+
 //Internet exploder
 
    var alertFallback = false;
@@ -131,7 +132,7 @@ function example2(){
 function supports_web_workers() {
         return !!window.Worker;
 }
-var useWorkers=supports_web_workers();
+var useWorkers=false;//supports_web_workers();//supports_web_workers();
 function process() {
 
         
@@ -190,70 +191,17 @@ function process() {
 		var homSetsA=[];
 		var homSetsB=[];
 
-	       if(useWorkers){ 
-                var alnAWorker = new Worker("script/homologySets.js");
-                var alnBWorker = new Worker("script/homologySets.js");
-
-                
-                alnAWorker.onmessage = function(e){
-                        var ans = JSON.parse(e.data);
-                        console.log(ans);
-                        if (ans.type=="error"){
-                                throw(ans.msg);
-                                $("#errorBox").html("<b>ERROR: "+ans.msg+"</b>");
-                                $("#errorBox").fadeIn();
-                                return;
-                        }else {
-                                console.log("OK");
-                                alnAresults=ans.ans;
-                                console.log(ans.doEvo);
-                                G.doEvo=ans.doEvo;
-                                if (G.doEvo){
-                                        $("#evol").removeAttr("disabled");
-                                        $("#evol").html("evol (recommended)");
-                                        $("#pos").html("pos");
-                                        $("#homologyType").val(3);
-                                }
-                                $("#homologyType").kendoDropDownList();
-                        }
-                        if (alnBresults.length>0){
-                                _.defer(process2);
-                        }
-                }
-                alnAWorker.postMessage(JSON.stringify({'aln':alnA,'tree':newick_string,'doEvo':G.doEvo,'seqNum':G.sequenceNumber}));
-                alnBWorker.onmessage = function(e){
-                        var ans = JSON.parse(e.data);
-                        console.log(ans);
-                        if (ans.type=="error"){
-                                throw(ans.msg);
-                                $("#errorBox").html("<b>ERROR: "+ans.msg+"</b>");
-                                $("#errorBox").fadeIn();
-                                return;
-                        }else {
-                                alnBresults=ans.ans;
-                        }
-                        if (alnAresults.length>0){
-                                _.defer(process2);
-                        }
-                }
-                alnBWorker.postMessage(JSON.stringify({'aln':alnB,'tree':newick_string,'doEvo':G.doEvo,'seqNum':G.sequenceNumber}));
-               }else {
                 var ans;
-                _.defer(function(){
-                        ans = performHomologyWork(newick_string,alnA,G.sequenceNumber); 
-                        alnAresults=ans.ans;
-                });
-                _.defer(function(){
-                        ans = performHomologyWork(newick_string,alnB,G.sequenceNumber); 
-                        alnBresults=ans.ans;
-                        doEvo=ans.doEvo;
-                        _.defer(process2);
-                });
-               }
+                ans = performHomologyWork(newick_string,alnA,G.sequenceNumber); 
+                alnAresults=ans.ans;
+                ans = performHomologyWork(newick_string,alnB,G.sequenceNumber); 
+                alnBresults=ans.ans;
+                doEvo=ans.doEvo;
+                _.defer(function(){$("#dialogtext").html("Calculation of distances")});
+                _.defer(process2);//this MUST be deferred
 }
 function process2(){
-
-        $("#dialogtext").html("Calculation of distances");
+        console.log("PROCESS 2");
 		var homSetsA = alnAresults[0];
 		var gapsA = alnAresults[1];
 		var homSetsB = alnBresults[0];

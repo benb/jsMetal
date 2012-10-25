@@ -19,7 +19,73 @@ onmessage = function(e){
         dist = getDistances(dat.A,dat.B,g.doEvo,dat.gapsHere,g);
         postMessage(JSON.stringify({"type":"success","distances":dist}));
 }
-function getDistances(homSetsA, homSetsB, doEvo, gapsHere,G){
+
+function quickDistOther(homSetsA, homSetsB){
+        charDist=[];
+        seqDist=[];
+        alnDist=0;
+        totLength=0;
+        var inc=1.0/homSetsA[0][0].length
+        for (var i=0; i < G.sequenceNumber; i++){ //each sequence
+                charDist[i]=[];
+                seqDist[i]=0;
+                for(var j=0;j<homSetsA[i].length;j++){
+                        charDist[i][j]=0;
+                        var a = homSetsA[i][j];
+                        var b = homSetsB[i][j];
+                        for (k=0; k < a.length; k++){
+                                if (a[k]!=b[k]){
+                                        charDist[i][j]+=inc
+                                }
+                        }
+                        seqDist[i]+=charDist[i][j];
+                        
+                }
+                alnDist+=seqDist[i];
+                seqDist[i]/=charDist[i].length;
+                totLength+=charDist[i].length;
+        }
+        var ans = {};
+        ans.charDist = charDist;
+        ans.seqDist = seqDist;
+        console.log(ans.seqDist);
+        ans.alnDist = alnDist;
+        return ans;
+}
+
+function distances(homSetsA,homSetsB,doEvo,gapsHere,G){
+        var fn=[];
+        fn.push(_.memoize(
+                        function() {quickDistOther(homSetsA[0],homSetsB[0])}
+                        )
+        );
+        for (var i=1; i < homSetsA.length; i++){
+                var f = _.bind(quickDistOther,{},homSetsA[i],homSetsB[i]);
+                fn.push(_.memoize(f));
+        }
+        return fn;
+
+}
+
+function getDistances(homSetsA,homSetsB,doEvo,gapsHere,G){
+        var distance=new Object();
+        distance.character = [];
+        distance.sequence = [];
+        distance.alignment = [];
+        for (var i=1; i < 3+doEvo;i++){
+                var ans = quickDistOther(homSetsA[i],homSetsB[i]);
+                distance.character.push(ans.charDist);
+                distance.sequence.push(ans.seqDist);
+                distance.alignment.push(ans.alnDist);
+        }
+        //dummy
+        distance.character.unshift(distance.character[0]);
+        distance.sequence.unshift(distance.sequence[0]);
+        distance.alignment.unshift(distance.alignment[0]);
+        return distance;
+}
+
+function getDistancesX(homSetsA, homSetsB, doEvo, gapsHere,G){
 	
 	var setSize= G.sequenceNumber - 1;
 	
