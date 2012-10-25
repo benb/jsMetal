@@ -214,31 +214,19 @@ function process2(){
 			gapsHere[j]=(gapsA[j] && gapsB[j]);
 		}
 
-                if (useWorkers){
-                var distWorker = new Worker("script/distances.js");
-                distWorker.onmessage = function(e){
-                        var ans = JSON.parse(e.data);
-                        switch(ans.type){
-                                case "error":
-                                        throw(ans.msg);
-                                        error(ans.msg);
-                                        return;
-                                case "intermediate":
-                                        //console.log(ans.msg);
-                                        $("#dialogtext").html(ans.msg);
-                                        break;
-                                case "success":
-                                        $("#dialogtext").html("Performing visualisation");
-                                        distances=ans.distances;
-                                        _.defer(process3);
-                        }
-                }
-                distWorker.postMessage(JSON.stringify({'A':homSetsA,'B':homSetsB,'gapsHere':gapsHere,'G':G}));
-                }else {
-                        distances=getDistances(homSetsA,homSetsB,G.doEvo,gapsHere,G);
-                        _.defer(process3);
-                }
+                distanceFs=distances(homSetsA,homSetsB);
+                distances={};
+                distances.character=[];
+                distances.alignment=[];
+                distances.sequence=[];
+                _.defer(process3);
 		//distances=getDistances(homSetsA,homSetsB,G.doEvo,gapsHere);
+}
+function updateCurrentHomType(){
+        var raw=distanceFs[homType]();
+        distances.character[homType]=raw.character;
+        distances.alignment[homType]=raw.alignment;
+        distances.sequence[homType]=raw.sequence;
 }
 function process3(){
 		
@@ -259,13 +247,14 @@ function process3(){
 	$("#input").remove();
 	$("#instructions").remove();
 	homType=parseInt($('#homologyType option:selected').val());
+        updateCurrentHomType();
 	if(G.visualize){
 		$("#distanceVisualizationPanel").css("display","inline");
 		var cssCache=[[],[],[],[]];
 		
 		//create coloured sequences for all homology types
-		var $alnASeqDivX = colouredSequenceMaker(distances.character,alnA,"alnA");
-		var $alnBSeqDivX = colouredSequenceMaker(distances.character,alnB,"alnB");
+		var $alnASeqDivX = colouredSequenceMaker(distanceFs,alnA,"alnA");
+		var $alnBSeqDivX = colouredSequenceMaker(distanceFs,alnB,"alnB");
                 alnAF = $alnASeqDivX;
                 alnBF = $alnBSeqDivX;
                 var $alnASeqDiv = alnAF[0];
@@ -281,8 +270,8 @@ function process3(){
 		
 		$("body").append($visualiser);
 		
-                applyCSS(alnAF[0],alnAF[1][homType]);
-                applyCSS(alnBF[0],alnBF[1][homType]);
+                applyCSS(alnAF[0],alnAF[1][homType]());
+                applyCSS(alnBF[0],alnBF[1][homType]());
 
 		//get width of sequence display and characters
 		var divWidth = $("#alnA_seqs").outerWidth();
@@ -442,6 +431,7 @@ function process3(){
 	$("#homologyType").change(function () {
 			
 			homType=parseInt($(this).val());
+                        updateCurrentHomType();
 			
                         /*
 			for(var i=0;i<G.sequenceNumber;i++){
@@ -454,8 +444,8 @@ function process3(){
 			$("#alnDist").text(roundedAlnDistance);
 			
 			if(G.visualize){
-                                applyCSS(alnAF[0],alnAF[1][homType]);
-                                applyCSS(alnBF[0],alnBF[1][homType]);
+                                applyCSS(alnAF[0],alnAF[1][homType]());
+                                applyCSS(alnBF[0],alnBF[1][homType]());
 				if(cssCache[homType][visType] == undefined){
 					cssCache[homType][visType] = [];
 					cssCache[homType][visType]=transparentAminoCSS(distances.character[homType],visType);

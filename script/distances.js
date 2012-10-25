@@ -21,42 +21,43 @@ onmessage = function(e){
 }
 
 function quickDistOther(homSetsA, homSetsB){
-        charDist=[];
-        seqDist=[];
-        alnDist=0;
+        console.log("HOMOLOGY");
+        character=[];
+        sequence=[];
+        alignment=0;
         totLength=0;
         var inc=1.0/homSetsA[0][0].length
         for (var i=0; i < G.sequenceNumber; i++){ //each sequence
-                charDist[i]=[];
-                seqDist[i]=0;
+                character[i]=[];
+                sequence[i]=0;
                 for(var j=0;j<homSetsA[i].length;j++){
-                        charDist[i][j]=0;
+                        character[i][j]=0;
                         var a = homSetsA[i][j];
                         var b = homSetsB[i][j];
                         for (k=0; k < a.length; k++){
                                 if (a[k]!=b[k]){
-                                        charDist[i][j]+=inc
+                                        character[i][j]+=inc
                                 }
                         }
-                        seqDist[i]+=charDist[i][j];
+                        sequence[i]+=character[i][j];
                         
                 }
-                alnDist+=seqDist[i];
-                seqDist[i]/=charDist[i].length;
-                totLength+=charDist[i].length;
+                alignment+=sequence[i];
+                sequence[i]/=character[i].length;
+                totLength+=character[i].length;
         }
         var ans = {};
-        ans.charDist = charDist;
-        ans.seqDist = seqDist;
-        console.log(ans.seqDist);
-        ans.alnDist = alnDist;
+        ans.character = character;
+        ans.sequence = sequence;
+        console.log(ans.sequence);
+        ans.alignment = alignment;
         return ans;
 }
 
 function distances(homSetsA,homSetsB,doEvo,gapsHere,G){
         var fn=[];
         fn.push(_.memoize(
-                        function() {quickDistOther(homSetsA[0],homSetsB[0])}
+                        function() {return quickDistOther(homSetsA[0],homSetsB[0])}
                         )
         );
         for (var i=1; i < homSetsA.length; i++){

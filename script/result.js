@@ -36,20 +36,23 @@ function sequenceMaker(alignment,alignmentID){
 	return $sequenceDiv;
 }
 
-function colouredCSSMaker(charDist,alignment,alignmentID){
+function colouredCSSMaker(charDistF,alignment,alignmentID){
 	
 	var $sequenceDiv = [];
-	for(var homType = 0; homType<charDist.length;homType++){
+	for(var homType = 0; homType<charDistF.length;homType++){
+                var tmp=function(hT){
+                console.log("WTF2 " +  hT + " " + charDistF[hT]);
+                var charDist = charDistF[hT]().character;
 		
-		$sequenceDiv[homType] = [];
+		var $sDiv = [];
 		
 		var $colourF = [];
 		//character distances converted to a value between 0 and 255, for use in CSS styling
 		var eightBitDistances = [];
 		for(var i=0;i<G.sequenceNumber;i++){
 			eightBitDistances[i]=[];		
-                        for(var k=0;k<charDist[homType][i].length;k++){
-                                eightBitDistances[i][k] = Math.round(255*charDist[homType][i][k]);
+                        for(var k=0;k<charDist[hT][i].length;k++){
+                                eightBitDistances[i][k] = Math.round(255*charDist[hT][i][k]);
                         }
 		}
 		
@@ -63,7 +66,7 @@ function colouredCSSMaker(charDist,alignment,alignmentID){
 			
 			for(var j = 0;j<alignment[i].content.length;j++){
                                         if (alignment[i].content[j] != "-"){
-                                                $character = [ eightBitDistances[i][k], Math.round(charDist[homType][i][k]*1000000)/1000000];
+                                                $character = [ eightBitDistances[i][k], Math.round(charDist[hT][i][k]*1000000)/1000000];
                                                 k++;
                                         }else {
                                                 $character=null;
@@ -71,12 +74,13 @@ function colouredCSSMaker(charDist,alignment,alignmentID){
 				$colourF[i].push($character);
 			}
 		
-			$sequenceDiv[homType].push($colourF[i]);
+			$sDiv.push($colourF[i]);
 		}
+                return $sDiv;
+                }
 	
-		
+		$sequenceDiv[homType] = _.memoize(_.bind(tmp,{},homType));
 	}
-
 	return $sequenceDiv;
 }
 function applyCSS(alignment,cssData){
@@ -98,10 +102,11 @@ function applyCSS(alignment,cssData){
         return alignment;
 }
 
-function colouredSequenceMaker(charDist,alignment,alignmentID){
-	
+function colouredSequenceMaker(distanceFs,alignment,alignmentID){ 
         var aln = sequenceMaker(alignment,alignmentID);
-        var colourFs = colouredCSSMaker(charDist,alignment,alignmentID);
+        console.log("WTF " + distanceFs[0]);
+        console.log("WTF " + distanceFs[0]());
+        var colourFs = colouredCSSMaker(distanceFs,alignment,alignmentID);
         //var colourFs = [1,2,3,4]; 
         return [aln,colourFs];
 
