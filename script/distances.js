@@ -21,6 +21,17 @@ onmessage = function(e){
 }
 
 function quickDistOther(homSetsA, homSetsB){
+        var different = function(a1,a2){
+                if (a1.length!=a2.length){
+                        return true;
+                }
+                for (var i=0; i < a1.length; i++){
+                        if (a1[i]!=a2[i]){
+                                return true;
+                        }
+                }
+                return false;
+        }
         console.log("HOMOLOGY");
         character=[];
         sequence=[];
@@ -35,7 +46,7 @@ function quickDistOther(homSetsA, homSetsB){
                         var a = homSetsA[i][j];
                         var b = homSetsB[i][j];
                         for (k=0; k < a.length; k++){
-                                if (a[k]!=b[k]){
+                                if (different(a[k],b[k])){
                                         character[i][j]+=inc
                                 }
                         }
@@ -46,6 +57,7 @@ function quickDistOther(homSetsA, homSetsB){
                 sequence[i]/=character[i].length;
                 totLength+=character[i].length;
         }
+        alignment/=totLength;
         var ans = {};
         ans.character = character;
         ans.sequence = sequence;

@@ -143,6 +143,10 @@ function process() {
 	
         $("#dialogtext").html("Calculation of homology sets");
         $("#dialog").dialog("open");
+        _.defer(process1);
+}
+function process1(){
+        console.log("process1");
 	G.doEvo = 0;
 	
 		//var newick_string=$("#newick").val().replace(/\s/g, "");
@@ -185,6 +189,7 @@ function process() {
 	{
 		$("#errorBox").html("<b>ERROR: "+e+"</b>");
 		$("#errorBox").fadeIn();
+                $("#dialog").dialog("close");
 		return;
 	}
 	
@@ -196,7 +201,7 @@ function process() {
                 alnAresults=ans.ans;
                 ans = performHomologyWork(newick_string,alnB,G.sequenceNumber); 
                 alnBresults=ans.ans;
-                doEvo=ans.doEvo;
+                G.doEvo=ans.doEvo;
                 _.defer(function(){$("#dialogtext").html("Calculation of distances")});
                 _.defer(process2);//this MUST be deferred
 }
@@ -247,8 +252,21 @@ function process3(){
 	$("#input").remove();
 	$("#instructions").remove();
 	homType=parseInt($('#homologyType option:selected').val());
-        updateCurrentHomType();
+
+        _.defer(updateCurrentHomType);
+        _.defer(vis);
+        
+}
+function vis(){
+        console.log("VIS");
 	if(G.visualize){
+                if (G.doEvo){
+                        $("#evol").removeAttr("disabled");
+                        $("#evol").html("evol (recommended)");
+                        $("#pos").html("pos");
+                        $("#homologyType").val(3);
+                }
+                $("#homologyType").kendoDropDownList();
 		$("#distanceVisualizationPanel").css("display","inline");
 		var cssCache=[[],[],[],[]];
 		
@@ -421,13 +439,15 @@ function process3(){
 				
 				});
 			})
-                _.defer(function(){
-                        $("#distanceVisualizationType").change();
-                });
+                $("#distanceVisualizationType").change();
 
 	}
-       	
         _.defer(function(){$("#dialog").dialog("close");});
+        _.defer(bindings);
+       	
+}
+function bindings(){
+
 	$("#homologyType").change(function () {
 			
 			homType=parseInt($(this).val());
@@ -547,9 +567,7 @@ function doRedisplaySparklines(){
 
 function recalculateMinilines(){
        var t1 = new Date();
-       console.log("Minilines");
        for (var i=0; i < distances.sequence[homType].length; i++){
-               console.log(i);
                var target = $(".miniline_"+i);
                target.css("width","50%");
                target.html("<img src='png/"+Math.floor(distances.sequence[homType][i]*100)+".png' title='"+distances.sequence[homType][i]+"' height='10px' style='max-width:100%'/>")

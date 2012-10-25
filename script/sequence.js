@@ -14,6 +14,14 @@ function sequence(name,content){
 }
 
 
+var nextNodeID=0;
+var nodeIDs={}
+function nodeID(s){
+        if (!nodeIDs.hasOwnProperty(s)){
+                nodeIDs[s]=nextNodeID++;
+        }
+        return nodeIDs[s];
+}
 
 // PARSER
 // Takes a FASTA formatted alignment and returns an array of "sequence" objects. 
@@ -100,7 +108,7 @@ function labeller(alignment,tree,doEvo,seqNum){
 			if(alignment[i].content[j] != "-"){
 				// Label character and increase index. Using pre-increment on index to start at 1 and thus allow gaps
 				// that appear before any character to be labelled as 0.
-				nextLabel = i + "X" + ++index;
+				nextLabel = [i,++index];
 				
 				alignment[i].labeledContent[SSP].push(nextLabel);
 				alignment[i].labeledContent[SIM].push(nextLabel);
@@ -118,15 +126,15 @@ function labeller(alignment,tree,doEvo,seqNum){
 			else{
 				//gapsHere[j]=true;
 				// Do not label gaps
-				alignment[i].labeledContent[SSP].push("-");
+				alignment[i].labeledContent[SSP].push([]);
 				// Label gaps by sequence
-				alignment[i].labeledContent[SIM].push( i + "-");
+				alignment[i].labeledContent[SIM].push([i]);
 				// Label gaps by position
-				alignment[i].labeledContent[POS].push( i + "-" + index);
+				alignment[i].labeledContent[POS].push([i,-index]);
 				// Add position information to evo-labelled gaps.
 				if(doEvo){
-					alignment[i].labeledContent[EVO][j]=alignment[i].labeledContent[EVO][j].concat(i + "-" + index);
-					}
+					alignment[i].labeledContent[EVO][j]=alignment[i].labeledContent[EVO][j].concat([i,-index]);
+                                }
 				
 			}
 		}
@@ -170,13 +178,14 @@ function evoLabeller(alignment,tree,seqNum){
 			splits=tree.splitsFor(gapMemory);
 			for(var k=0;k<gapMemory.length;k++){
 				
-				alignment[names[gapMemory[k]]].labeledContent[EVO][j]=splits[gapMemory[k]].toString();
+				alignment[names[gapMemory[k]]].labeledContent[EVO][j]=[nodeID(splits[gapMemory[k]].toString())];
 			}
 					
 		}
 		
 	}
 }
+
 function nameSorter(a,b){
 	if (a.name == undefined && b.name != undefined){return 1;}
 	if (b.name == undefined && a.name != undefined){return -1;}
