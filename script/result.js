@@ -47,14 +47,6 @@ function colouredCSSMaker(charDistF,alignment,alignmentID){
 		
 		var $colourF = [];
 		//character distances converted to a value between 0 and 255, for use in CSS styling
-		var eightBitDistances = [];
-		for(var i=0;i<G.sequenceNumber;i++){
-			eightBitDistances[i]=[];		
-                        for(var k=0;k<charDist[hT][i].length;k++){
-                                eightBitDistances[i][k] = Math.round(255*charDist[hT][i][k]);
-                        }
-		}
-		
 		//array of jquery <div/>s for each sequence
 		for(var i=0;i<G.sequenceNumber;i++){
 	
@@ -65,7 +57,7 @@ function colouredCSSMaker(charDistF,alignment,alignmentID){
 			
 			for(var j = 0;j<alignment[i].content.length;j++){
                                         if (alignment[i].content[j] != "-"){
-                                                $character = [ eightBitDistances[i][k], Math.round(charDist[hT][i][k]*1000000)/1000000];
+                                                $character = [ Math.round(255*charDist[i][k]), Math.round(charDist[i][k]*1000000)/1000000];
                                                 k++;
                                         }else {
                                                 $character=null;
@@ -362,7 +354,6 @@ function charPadding(num) {
 }
 
 function transparentAminoCSS(charDist,type){
-	$(".clickable").css("background-color","");
 	var transparentCSS=[];
 	for(var i=0;i<G.sequenceNumber;i++){
 		transparentCSS[i]=[];
@@ -385,7 +376,11 @@ function transparentAminoCSS(charDist,type){
 
 function 	changeDistanceVisualization(newCSS){
 	if(!newCSS){
-		$(".clickable").css("background-color","");		
+                for(var i=0;i<G.sequenceNumber;i++){
+                        for(var k=0;k<G.origLengths[i];k++){
+                                $("#alnA_"+i+"_"+k).css("background-color","");
+                        }
+                }
 	}else{
 			for(var i=0;i<G.sequenceNumber;i++){
 				for(var k=0;k<G.origLengths[i];k++){

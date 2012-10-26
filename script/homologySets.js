@@ -22,7 +22,6 @@ var unpack = function(x){return JSON.parse(x);}
 
 onmessage = function(e){
         var o = unpack(e.data);
-        var set = o.set;
         var newick_string = o.tree;
         functionHandler=function(f){
                 f();
@@ -34,7 +33,7 @@ onmessage = function(e){
         var alnA = o.aln;
         
         try{
-                var ans=performHomologyWork(newick_string,alnA,o.seqNum,set);
+                alnA=performHomologyWork(newick_string,alnA,o.seqNum);
         }catch(e){
                 if (e.message){
 
@@ -50,12 +49,12 @@ onmessage = function(e){
                 return;
         }
 
-        postMessage(pack({'type':'success','ans':ans.ans,'doEvo':ans.doEvo,'set':set}));
+        postMessage(pack({'type':'success','ans':alnA,'doEvo':1}));
         
 }
 
-function performHomologyWork(newick_string,alnA,seqNum,set){
-        if(newick_string && set==3){
+function performHomologyWork(newick_string,alnA,seqNum){
+        if(newick_string){
                 root=parseNewickString(newick_string);
                 //check if names match those of the sequences
                 treeNames = [];
@@ -78,10 +77,9 @@ function performHomologyWork(newick_string,alnA,seqNum,set){
         }else {
                 tree=null;
                 doEvo=0;
-                set=2;
         }
-        var ans = getHomologySet(set,alnA,tree,doEvo,seqNum);
-        return {ans:ans,doEvo:doEvo,set:set};
+	labeller(alnA,tree,doEvo,seqNum);
+        return alnA;
 }
 
 function getHomologySets(aln,tree,doEvo,seqNum){	
@@ -96,7 +94,6 @@ function getHomologySets(aln,tree,doEvo,seqNum){
 
 }
 function getHomologySet(hom,aln,tree,doEvo,seqNum){
-	
 	var aln=resortNonOverlapping(aln,seqNum);
 	labeller(aln,tree,doEvo,seqNum);
 	var gapsHere=[];

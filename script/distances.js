@@ -20,8 +20,54 @@ onmessage = function(e){
         postMessage(JSON.stringify({"type":"success","distances":dist}));
 }
 
+function quickDistNew(alnA,alnB,hom){
+        console.log("quickDistNew " + hom);
+        var dists=[];
+        var seqDists=[];
+        var totalLen=0;
+        var alnDist=0;
+        for (var i=0; i < alnA.length; i++){
+                dists[i]=[];
+                seqDists[i]=0.0;
+                var p1=0;
+                var p2=0;
+
+                while (p1<alnA[i].content.length && p2<alnB[i].content.length){
+                        //fast forward to non-gaps
+                        if(alnA[i].content[p1]=="-"){
+                                p1++;
+                                continue;
+                        }
+                        if(alnB[i].content[p2]=="-"){
+                                p2++;
+                                continue;
+                        }
+                        var dist=0.0;
+                        for (var k=0; k < alnA.length; k++){
+                                if (k==i){continue;}
+                                if (alnA[k].labeledContent[hom][p1] != alnB[k].labeledContent[hom][p2]){
+                                        dist++;
+                                }
+                        }
+                        dist/=(alnA.length-1);
+                        dists[i].push(dist);
+                        seqDists[i]+=dist;
+                        alnDist+=dist;
+                        totalLen++;
+                        p1++;
+                        p2++;
+                }
+                seqDists[i]/=dists[i].length;
+        }
+        var ans = {};
+        ans.character=dists;
+        ans.alignment=alnDist/totalLen;
+        ans.sequence=seqDists;
+        return ans;
+}
 function quickDistOther(homSetsA, homSetsB,label){
         var different = function(a1,a2){
+                return (a1!=a2);
                 if (a1.length!=a2.length){
                         return true;
                 }
@@ -66,14 +112,21 @@ function quickDistOther(homSetsA, homSetsB,label){
         return ans;
 }
 
-function calcDistances(homSetsA,homSetsB,doEvo,gapsHere,G){
+function calcDistances(alnA,alnB){
+        console.log("calcDistances");
         var fn=[];
+        console.log("HUH");
+        console.log(alnA);
+        console.log(alnA[0].labeledContent);
+        console.log(alnA[0].labeledContent.length);
+        var len = alnA[0].labeledContent.length;
+        console.log(len);
         fn.push(_.memoize(
-                        function() { return quickDistOther(homSetsA[0],homSetsB[0],0); }
+                        function() { return quickDistNew(alnA,alnB,0); }
                         )
         );
-        for (var i=1; i < homSetsA.length; i++){
-                var f = _.bind(quickDistOther,{},homSetsA[i],homSetsB[i],i);
+        for (var i=1; i < len; i++){
+                var f = _.bind(quickDistNew,{},alnA,alnB,i);
                 fn.push(_.memoize(f));
         }
         return fn;

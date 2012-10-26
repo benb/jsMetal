@@ -18,7 +18,7 @@ var colDistA;
 var colDistB;
 var sparkLineClickA;
 var sparkLineClickB;
-var homType=undefined;
+var homType=2;
 
 //Global object (container for a few general features and options that should be easily available)
 var G = {};
@@ -210,20 +210,10 @@ function process1(){
 
 function doHomology(newick_string,aln,seqNum,end){
         var gotAns=function(ans){
-                var myHom=ans.set;
-                if (!homType){
-                        homType=myHom;
-                }
-                if (aln===alnA){
-                        alnAresults[0][myHom]=ans.ans[0];
-                        alnAresults[1]=ans.ans[1];
-                        G.doEvo=ans.doEvo;
-                        console.log("GOT A");
-                        console.log(ans.ans);
-                }else {
-                        alnBresults[0][myHom]=ans.ans[0];
-                        alnBresults[1]=ans.ans[1];
-                        console.log("GOT B");
+                if (alnA===aln){
+                        alnA=ans.ans;
+                }else if (alnB===aln){
+                        alnB=ans.ans;
                 }
                 end();
         }
@@ -234,34 +224,23 @@ function doHomology(newick_string,aln,seqNum,end){
                         if (ans.type=='error'){
                                 throw ("ERROR: " + ans.msg);
                         }else if (ans.type=='status'){
-                                console.log("A");
+                                //console.log("A");
                         }else if (ans.type=='success') {
                                 gotAns(ans);
                         }
                 }
                 worker.postMessage(pack({tree:newick_string,aln:aln,seqNum:seqNum,set:3}));
         } else {
-                gotAns(performHomologyWork(newick_string,aln,seqNum,3));
+                performHomologyWork(newick_string,aln,seqNum,3);
+                end();
         }
         
 }
 function process2(){
         _.defer(function(){$("#dialogtext").html("Calculation of distances")});
         console.log("PROCESS 2");
-		var homSetsA = alnAresults[0];
-		var gapsA = alnAresults[1];
-		var homSetsB = alnBresults[0];
-                console.log(homSetsA);
-		var gapsB = alnBresults[1];	
-		
-		var gapsHere=[];
-		
-		var sharedLength= gapsA.length > gapsB.length ? gapsA.length : gapsB.length
-		for(var j=0; j < sharedLength;j++){
-			gapsHere[j]=(gapsA[j] && gapsB[j]);
-		}
-
-                distanceFs=calcDistances(homSetsA,homSetsB);
+                distanceFs=calcDistances(alnA,alnB);
+                console.log(distanceFs.length);
                 distances={};
                 distances.character=[];
                 distances.alignment=[];
@@ -271,6 +250,8 @@ function process2(){
                 dateStamp("end process2()")
 }
 function updateCurrentHomType(){
+        console.log(distanceFs);
+        console.log(distanceFs.length);
         console.log("UPDATE HOM");
         var raw=distanceFs[homType]();
         distances.character[homType]=raw.character;
@@ -312,7 +293,7 @@ function vis(){
                 }
                 $("#homologyType").kendoDropDownList();
 		$("#distanceVisualizationPanel").css("display","inline");
-		var cssCache=[[],[],[],[]];
+		cssCache=[[],[],[],[]];
 		
 		//create coloured sequences for all homology types
 		var $alnASeqDivX = colouredSequenceMaker(distanceFs,alnA,"alnA");
@@ -455,10 +436,10 @@ function vis(){
 		$("#alnA_seqs").on('scroll',scrollA);
 		$("#alnB_seqs").on('scroll',scrollB);
 		
-		$("#distanceVisualizationType").change(function () {
+                var distVisHandler = function () {
 			$("#distanceVisualizationType option:selected").each(function () {
 				
-				visType=parseInt($(this).val());
+				var visType=parseInt($(this).val());
 				switch (visType){
 				case 2:
 					$("#seqColour").attr('href','./'+G.sequenceType+'.css');
@@ -482,8 +463,9 @@ function vis(){
 				}
 				
 				});
-			})
-                $("#distanceVisualizationType").change();
+			};
+                distVisHandler();
+		$("#distanceVisualizationType").change(distVisHandler);
 
 	}
         _.defer(function(){$("#dialog").dialog("close");});
