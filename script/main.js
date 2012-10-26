@@ -18,7 +18,7 @@ var colDistA;
 var colDistB;
 var sparkLineClickA;
 var sparkLineClickB;
-var homType;
+var homType=undefined;
 
 //Global object (container for a few general features and options that should be easily available)
 var G = {};
@@ -195,6 +195,10 @@ function process1(){
 	
 		var homSetsA=[];
 		var homSetsB=[];
+                alnAresults=[];
+                alnBresults=[];
+                alnAresults[0]=[];
+                alnBresults[0]=[];
 
                 var ans;
                 var end = _.after(2,process2);
@@ -206,12 +210,19 @@ function process1(){
 
 function doHomology(newick_string,aln,seqNum,end){
         var gotAns=function(ans){
+                var myHom=ans.set;
+                if (!homType){
+                        homType=myHom;
+                }
                 if (aln===alnA){
-                        alnAresults=ans.ans;
+                        alnAresults[0][myHom]=ans.ans[0];
+                        alnAresults[1]=ans.ans[1];
                         G.doEvo=ans.doEvo;
                         console.log("GOT A");
+                        console.log(ans.ans);
                 }else {
-                        alnBresults=ans.ans;
+                        alnBresults[0][myHom]=ans.ans[0];
+                        alnBresults[1]=ans.ans[1];
                         console.log("GOT B");
                 }
                 end();
@@ -228,9 +239,9 @@ function doHomology(newick_string,aln,seqNum,end){
                                 gotAns(ans);
                         }
                 }
-                worker.postMessage(pack({tree:newick_string,aln:aln,seqNum:seqNum}));
+                worker.postMessage(pack({tree:newick_string,aln:aln,seqNum:seqNum,set:3}));
         } else {
-                gotAns(performHomologyWork(newick_string,aln,seqNum));
+                gotAns(performHomologyWork(newick_string,aln,seqNum,3));
         }
         
 }
@@ -284,8 +295,6 @@ function process3(){
 	
 	$("#input").remove();
 	$("#instructions").remove();
-	homType=parseInt($('#homologyType option:selected').val());
-        console.log("homType " + homType);
 
         _.defer(updateCurrentHomType);
         _.defer(vis);
@@ -299,7 +308,7 @@ function vis(){
                         $("#evol").removeAttr("disabled");
                         $("#evol").html("evol (recommended)");
                         $("#pos").html("pos");
-                        $("#homologyType").val(3);
+                        $("#homologyType").val(homType);
                 }
                 $("#homologyType").kendoDropDownList();
 		$("#distanceVisualizationPanel").css("display","inline");
