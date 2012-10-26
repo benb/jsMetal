@@ -50,7 +50,7 @@ function parser(alignmentString,alnName) {
 	//fills the names and content arrays removing unnecesary symbols (> and \n)
 	while((parsing = seqparser.exec(alignmentString))){
 
-		name = parsing[1].trim().replace(/^>/,"");
+		name = parsing[1].trim().replace(/^>/,"").replace(/\s/g,"_");
 		content = parsing[2].trim().replace(/\n/g,"");
 				
 		var badChar = content.search(invalidCharacters);

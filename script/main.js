@@ -23,6 +23,11 @@ var homType;
 //Global object (container for a few general features and options that should be easily available)
 var G = {};
 
+//var pack = function(x){return msgpack.pack(x,true)};
+//var unpack = function(x){return msgpack.unpack(x)};
+
+var pack = function(x){return JSON.stringify(x)};
+var unpack = function(x){return JSON.parse(x)};
 
 //Internet exploder
 
@@ -105,45 +110,41 @@ $dropArea.bind({
 
         
 }
-function example1(){
-        $.ajax(location.protocol + "//" + location.host + "/" + location.pathname.split('/').slice(0,-1).join("/") +  "/examples/example1a.fa").done(function(data){
+function example(i){
+        $.ajax(location.protocol + "//" + location.host + "/" + location.pathname.split('/').slice(0,-1).join("/") +  "/examples/example"+i+"a.fa").done(function(data){
                 $("#alignment1").val(data);
         });
-        $.ajax(location.protocol + "//" + location.host + "/" + location.pathname.split('/').slice(0,-1).join("/") +  "/examples/example1b.fa").done(function(data){
+        $.ajax(location.protocol + "//" + location.host + "/" + location.pathname.split('/').slice(0,-1).join("/") +  "/examples/example"+i+"b.fa").done(function(data){
                 $("#alignment2").val(data);
         });
-        $.ajax(location.protocol + "//" + location.host + "/" + location.pathname.split('/').slice(0,-1).join("/") +  "/examples/example1.tre").done(function(data){
+        $.ajax(location.protocol + "//" + location.host + "/" + location.pathname.split('/').slice(0,-1).join("/") +  "/examples/example"+i+".tre").done(function(data){
                 $("#newick").val(data);
         });
 
 }
-function example2(){
-        $.ajax(location.protocol + "//" + location.host + "/" + location.pathname.split('/').slice(0,-1).join("/") +  "/examples/example2a.fa").done(function(data){
-                $("#alignment1").val(data);
-        });
-        $.ajax(location.protocol + "//" + location.host + "/" + location.pathname.split('/').slice(0,-1).join("/") +  "/examples/example2b.fa").done(function(data){
-                $("#alignment2").val(data);
-        });
-        $.ajax(location.protocol + "//" + location.host + "/" + location.pathname.split('/').slice(0,-1).join("/") +  "/examples/example2.tre").done(function(data){
-                $("#newick").val(data);
-        });
-}
-	
 function supports_web_workers() {
         return !!window.Worker;
 }
-var useWorkers=false;//supports_web_workers();//supports_web_workers();
+var useWorkers=supports_web_workers();//supports_web_workers();//supports_web_workers();
+var START = new Date();
+
+function dateStamp(string){
+        var t=new Date();
+        console.log((t-START) + " : " + string);
+        START=t;
+}
 function process() {
 
         
 
-	START = new Date();
 	//hide error box if it was present
 	$("#errorBox").css("display","none");
 	
         $("#dialogtext").html("Calculation of homology sets");
         $("#dialog").dialog("open");
+        dateStamp("end process()")
         _.defer(process1);
+
 }
 function process1(){
         console.log("process1");
@@ -181,8 +182,7 @@ function process1(){
 		
 		//if there's anything left, it had better be newick tree or we will be very upset.
 	
-		END=new Date();
-		console.log(END-START);
+                dateStamp("");
 			}
 
 	catch(e)
@@ -197,19 +197,50 @@ function process1(){
 		var homSetsB=[];
 
                 var ans;
-                ans = performHomologyWork(newick_string,alnA,G.sequenceNumber); 
-                alnAresults=ans.ans;
-                ans = performHomologyWork(newick_string,alnB,G.sequenceNumber); 
-                alnBresults=ans.ans;
-                G.doEvo=ans.doEvo;
-                _.defer(function(){$("#dialogtext").html("Calculation of distances")});
-                _.defer(process2);//this MUST be deferred
+                var end = _.after(2,process2);
+                _.defer(function(){doHomology(newick_string,alnA,G.sequenceNumber,end)}); 
+                _.defer(function(){doHomology(newick_string,alnB,G.sequenceNumber,end)}); 
+
+                dateStamp("end process1()")
+}
+
+function doHomology(newick_string,aln,seqNum,end){
+        var gotAns=function(ans){
+                if (aln===alnA){
+                        alnAresults=ans.ans;
+                        G.doEvo=ans.doEvo;
+                        console.log("GOT A");
+                }else {
+                        alnBresults=ans.ans;
+                        console.log("GOT B");
+                }
+                end();
+        }
+        if (useWorkers){
+                var worker = new Worker('script/homologySets.js');
+                worker.onmessage = function(event){
+                        var ans = unpack(event.data);
+                        if (ans.type=='error'){
+                                throw ("ERROR: " + ans.msg);
+                        }else if (ans.type=='status'){
+                                console.log("A");
+                        }else if (ans.type=='success') {
+                                gotAns(ans);
+                        }
+                }
+                worker.postMessage(pack({tree:newick_string,aln:aln,seqNum:seqNum}));
+        } else {
+                gotAns(performHomologyWork(newick_string,aln,seqNum));
+        }
+        
 }
 function process2(){
+        _.defer(function(){$("#dialogtext").html("Calculation of distances")});
         console.log("PROCESS 2");
 		var homSetsA = alnAresults[0];
 		var gapsA = alnAresults[1];
 		var homSetsB = alnBresults[0];
+                console.log(homSetsA);
 		var gapsB = alnBresults[1];	
 		
 		var gapsHere=[];
@@ -219,15 +250,17 @@ function process2(){
 			gapsHere[j]=(gapsA[j] && gapsB[j]);
 		}
 
-                distanceFs=distances(homSetsA,homSetsB);
+                distanceFs=calcDistances(homSetsA,homSetsB);
                 distances={};
                 distances.character=[];
                 distances.alignment=[];
                 distances.sequence=[];
                 _.defer(process3);
 		//distances=getDistances(homSetsA,homSetsB,G.doEvo,gapsHere);
+                dateStamp("end process2()")
 }
 function updateCurrentHomType(){
+        console.log("UPDATE HOM");
         var raw=distanceFs[homType]();
         distances.character[homType]=raw.character;
         distances.alignment[homType]=raw.alignment;
@@ -252,10 +285,12 @@ function process3(){
 	$("#input").remove();
 	$("#instructions").remove();
 	homType=parseInt($('#homologyType option:selected').val());
+        console.log("homType " + homType);
 
         _.defer(updateCurrentHomType);
         _.defer(vis);
         
+        dateStamp("end process3()")
 }
 function vis(){
         console.log("VIS");
@@ -444,6 +479,7 @@ function vis(){
 	}
         _.defer(function(){$("#dialog").dialog("close");});
         _.defer(bindings);
+        dateStamp("end vis()")
        	
 }
 function bindings(){
@@ -451,6 +487,7 @@ function bindings(){
 	$("#homologyType").change(function () {
 			
 			homType=parseInt($(this).val());
+                        console.log("homType " + homType);
                         updateCurrentHomType();
 			
                         /*
@@ -532,6 +569,7 @@ function bindings(){
                 }
                 newwindow.document.write("</pre></body></html>");
         });
+        dateStamp("end bindings()")
 }
 
 function cumulativeGaps(aln){

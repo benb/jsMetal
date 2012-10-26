@@ -94,6 +94,7 @@
 	<script type="text/javascript" src="script/result.js"></script>
 	<script type="text/javascript" src="script/homologySets.js"></script>
 	<script type="text/javascript" src="script/newick_parser.js"></script>
+	<script type="text/javascript" src="script/msgpack.js"></script>
 
         <script type="text/javascript" src="https://raw.github.com/eriwen/javascript-stacktrace/master/stacktrace.js"></script>
 		
@@ -144,8 +145,9 @@
         <div id="input">
                 
         <div style="margin-bottom:0.5em;">
-        <button class="k-button" id="example1" onClick="example1()">load small example</button>
-        <button class="k-button" id="example2" onClick="example2()">load larger example</button>
+        <button class="k-button" id="example1" onClick="example(1)">load small example</button>
+        <button class="k-button" id="example2" onClick="example(2)">load larger example</button>
+        <button class="k-button" id="example3" onClick="example(3)">load huge RNA example</button>
         </div>
         
                 <h3>Alignment 1</h3>

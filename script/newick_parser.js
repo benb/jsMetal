@@ -195,7 +195,7 @@ function basicParse(newick_string){
 		
 		default:
 			//get the name.
-			var name = newick_string.substring(temp.cursor).match("^[0-9A-Za-z_|/-]+");
+			var name = newick_string.substring(temp.cursor).match("^[0-9A-Za-z_|/\\.-]+");
 			// some browsers return an array of 1 string instead of a string; this line fixes it.
 			name = name instanceof Array ? name[0] : name;
 			

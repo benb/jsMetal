@@ -41,7 +41,6 @@ function colouredCSSMaker(charDistF,alignment,alignmentID){
 	var $sequenceDiv = [];
 	for(var homType = 0; homType<charDistF.length;homType++){
                 var tmp=function(hT){
-                console.log("WTF2 " +  hT + " " + charDistF[hT]);
                 var charDist = charDistF[hT]().character;
 		
 		var $sDiv = [];
@@ -104,8 +103,6 @@ function applyCSS(alignment,cssData){
 
 function colouredSequenceMaker(distanceFs,alignment,alignmentID){ 
         var aln = sequenceMaker(alignment,alignmentID);
-        console.log("WTF " + distanceFs[0]);
-        console.log("WTF " + distanceFs[0]());
         var colourFs = colouredCSSMaker(distanceFs,alignment,alignmentID);
         //var colourFs = [1,2,3,4]; 
         return [aln,colourFs];

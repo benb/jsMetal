@@ -4,15 +4,29 @@ var SIM = 1;
 var POS = 2;
 var EVO = 3;
 try{
-        importScripts('newick_parser.js','sequence.js');
+        importScripts('newick_parser.js','sequence.js','msgpack.js');
         importScripts('http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.3/underscore-min.js');
 }catch(e){
         //don't care
 }
 
+var functionHandler=function(f){
+        _.defer(f);
+}
+
+//var pack = function(x){return msgpack.pack(x,true);}
+//var unpack = function(x){return msgpack.unpack(x);}
+
+var pack = function(x){return JSON.stringify(x);}
+var unpack = function(x){return JSON.parse(x);}
+
 onmessage = function(e){
-        var o = JSON.parse(e.data);
+        var o = unpack(e.data);
         var newick_string = o.tree;
+        functionHandler=function(f){
+                f();
+                postMessage(pack({type:'status','msg':'done'}));
+        }
 
         var tree;
         var doEvo=0;
@@ -28,14 +42,14 @@ onmessage = function(e){
                                 .replace(/^Object.<anonymous>\s*\(/gm, '{anonymous}()@')
                                 .split('\n');
 
-                        postMessage(JSON.stringify({'type':'error','msg':e + '\n' + stack}));
+                        postMessage(pack({'type':'error','msg':e + '\n' + stack}));
                 }else {
-                        postMessage(JSON.stringify({'type':'error','msg':e}));
+                        postMessage(pack({'type':'error','msg':e}));
                 }
                 return;
         }
 
-        postMessage(JSON.stringify({'type':'success','ans':ans.ans,'doEvo':ans.doEvo}));
+        postMessage(pack({'type':'success','ans':ans.ans,'doEvo':ans.doEvo}));
         
 }
 
@@ -107,7 +121,7 @@ function getHomologySets(aln,tree,doEvo,seqNum){
                                         var myJ=j;
                                         var myGap=jNoGap;
                                         var f = _.bind(innerLoop,{},myH,myI,myJ,myGap)
-                                        _.defer(f);
+                                        functionHandler(f);
                                         jNoGap++;
 				}
 					

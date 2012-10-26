@@ -20,7 +20,7 @@ onmessage = function(e){
         postMessage(JSON.stringify({"type":"success","distances":dist}));
 }
 
-function quickDistOther(homSetsA, homSetsB){
+function quickDistOther(homSetsA, homSetsB,label){
         var different = function(a1,a2){
                 if (a1.length!=a2.length){
                         return true;
@@ -32,7 +32,7 @@ function quickDistOther(homSetsA, homSetsB){
                 }
                 return false;
         }
-        console.log("HOMOLOGY");
+        console.log("HOMOLOGY " + label);
         character=[];
         sequence=[];
         alignment=0;
@@ -66,14 +66,14 @@ function quickDistOther(homSetsA, homSetsB){
         return ans;
 }
 
-function distances(homSetsA,homSetsB,doEvo,gapsHere,G){
+function calcDistances(homSetsA,homSetsB,doEvo,gapsHere,G){
         var fn=[];
         fn.push(_.memoize(
-                        function() {return quickDistOther(homSetsA[0],homSetsB[0])}
+                        function() { return quickDistOther(homSetsA[0],homSetsB[0],0); }
                         )
         );
         for (var i=1; i < homSetsA.length; i++){
-                var f = _.bind(quickDistOther,{},homSetsA[i],homSetsB[i]);
+                var f = _.bind(quickDistOther,{},homSetsA[i],homSetsB[i],i);
                 fn.push(_.memoize(f));
         }
         return fn;
