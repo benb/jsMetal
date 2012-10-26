@@ -83,6 +83,17 @@ function performHomologyWork(newick_string,alnA,seqNum){
 }
 
 function getHomologySets(aln,tree,doEvo,seqNum){	
+        var sets=[];
+        var gapsHere;
+        for (var i=0; i < 2+doEvo; i++){
+                var ans = getHomologySet(i,aln,tree,doEvo,seqNum);
+                sets[i]=ans[0];
+                gapsHere=ans[1];
+        }
+        return [sets,gapsHere];
+
+}
+function getHomologySet(hom,aln,tree,doEvo,seqNum){
 	
 	var aln=resortNonOverlapping(aln,seqNum);
 	labeller(aln,tree,doEvo,seqNum);
@@ -105,7 +116,6 @@ function getHomologySets(aln,tree,doEvo,seqNum){
         }
 
 		
-	for(var hom=0;hom<=POS+doEvo;hom++){
 		
 		homologySets[hom]=[];
 		for (var i=0;i<aln.length;i++){
@@ -128,9 +138,8 @@ function getHomologySets(aln,tree,doEvo,seqNum){
 					
 			}
 		}
-	}
 		
-        return [homologySets,gapsHere];
+        return [homologySets[hom],gapsHere];
 }
 
 
