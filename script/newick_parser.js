@@ -3,7 +3,7 @@ function Node(){
 }
 
 Node.prototype.isRoot=function(){
-        return ((typeof this.parent) === 'undefined');
+        return ((typeof this.nodeparent) === 'undefined');
 }
 Node.prototype.isLeaf=function(){
         return ((typeof this.children) === 'undefined' || this.children.length==0);
@@ -33,6 +33,68 @@ Node.prototype.splitsFor=function(gap_leaves){
                 throw new Error("Only call Node#splitsFor on the root!");
         }
 }
+var c=0;
+Node.prototype.findNodeWithNoneDesc=function(desc){
+        if (_.difference(this.descendents(),desc).length==this.descendents().length){
+                return this;
+        }else if (this.children){
+                for (var i=0; i < this.children.length; i++){
+                        var potential=this.children[i].findNodeWithNoneDesc(desc);
+                        if (potential){
+                                return potential;
+                        }
+                }
+        }
+        return null;
+}
+Node.prototype.downCopy=function(node){
+        var copy=new Node()
+        copy.name=this.name;
+        copy.id=this.id;
+        copy.nodeparent=node;
+        copy.children=[];
+        node.children.push(copy);
+        _.each(this.children,function(x){x.downCopy(copy)});
+        if (copy.children.length==0){
+                delete(copy.children)
+        }
+}
+var c=0;
+Node.prototype.upCopy=function(newX,oldX){
+       var newY = new Node();
+       newY.name=this.name;
+       newY.id=this.id;
+       newY.children=[];
+       newY.nodeparent=newX;
+       newX.children.push(newY);
+       _.chain(this.children).filter(function(x){return !(x===oldX)}).each(function(x){x.downCopy(newY)});
+       if (this.nodeparent){
+               this.nodeparent.upCopy(newY,this);
+       }
+}
+Node.prototype.rootedCopy=function(){
+        var copy = new Node();
+        copy.name=this.nodeparent.name;
+        copy.id=this.nodeparent.id;
+        copy.children=[];
+        _.each(this.nodeparent.children,function(x){x.downCopy(copy)});
+        if(this.nodeparent.nodeparent){
+                this.nodeparent.nodeparent.upCopy(copy,this.nodeparent);
+        }
+        //now copy is trifucated but with one branch at root to specified node
+        //this is enough for our purposes
+        return copy;
+}
+
+
+
+var c =0;
+var throwit= function(gap_leaves,ans){
+    //    if (gap_leaves.length==2){
+        if(false){
+                throw(gap_leaves.join(":") + " \n " + ans.join(" - "));
+        }
+}
 
 //Dollo parsimony
 //returns an object that maps from a leaf node name
@@ -40,6 +102,7 @@ Node.prototype.splitsFor=function(gap_leaves){
 //the leaf node state, iff the leaf node is in the 0 state.
 function splitsForRoot(root,gap_leaves){
         var ans=splitsForX(root,gap_leaves);
+        throwit(gap_leaves,ans);
         return _.reduce(ans,function(h,kv){h[kv[0]]=kv[1]; return h;},new Object()) 
 }
 //returns an array of format [[leaf_name,node],[leaf_name,node]..]
@@ -49,6 +112,9 @@ function splitsForRoot(root,gap_leaves){
 
 
 function splitsForX(root,gap_leaves){
+        var newRootLoc=root.findNodeWithNoneDesc(gap_leaves);
+        var newRoot=newRootLoc.rootedCopy();
+        root=newRoot;
         var goodNodes = new Object();
         var gapL = new Object();
         var descNames = new Object();
@@ -94,19 +160,27 @@ function splitsForX(root,gap_leaves){
                 return goodNodes[x.id];
         });
 
+        var skipparent=false;
         _.each(finNodes,function(x){
-                //special handling for root
                 var desc = descNames[x.id];
-                if (x.parent.id==root.id){
-                        firstLevel =  _.chain(goodNodes).keys.filter(function(y){return (y.parent==root && x!=y)}).value();
-                        while (firstLevel.length>0){
-                                desc=desc.concat(descNames[firstLevel.pop().id]);
+                if (x.nodeparent===root){
+                        //special handling for root
+                        if (!skipparent){
+                                skipparent=true;
+                                firstLevel =  _.chain(finNodes).filter(function(y){return (y.nodeparent===root && !(x===y))}).value();
+                                while (firstLevel.length>0){
+                                        desc=desc.concat(descNames[firstLevel.pop().id]);
+                                }
+                                _.each(desc,function(x){
+                                        ans.push([x,desc]);
+                                });
                         }
+                }else {
+                        //make the list
+                        _.each(desc,function(x){
+                                ans.push([x,desc]);
+                        });
                 }
-                //make the list
-                _.each(desc,function(x){
-                        ans.push([x,desc]);
-                });
         });
         return ans;
 }
@@ -140,7 +214,7 @@ function parseNewickString(newick_string){
 	newick_string=newick_string.replace(/\)[^),;]*/g, ")"); //remove anything following a ")" until we reach another ")",a "," or a ";".
 	
 	//Sanity check
-	if(newick_string[0]!="("){throw "Error: newick trees must start with an opening parenthesis: \"(\"";}
+	if(newick_string[0]!="("){throw "Error: newick trees must start with an opening nodeparenthesis: \"(\"";}
 	if(newick_string[newick_string.length-1]!=";"){throw "Error: newick trees must end with a semi-colon: \";\"";}
 	unmatched =0;
 	for(var i=0;i<newick_string.length;i++){
@@ -148,7 +222,7 @@ function parseNewickString(newick_string){
 		if(newick_string[i]==")"){ unmatched--;}
 	}	
 	if( unmatched !=0){
-		throw "Error: newick tree contains different number of opening and closing parentheses. ";
+		throw "Error: newick tree contains different number of opening and closing nodeparentheses. ";
 	}
 	
 	
@@ -157,7 +231,7 @@ function parseNewickString(newick_string){
 	temp = new Object();		
 	temp.index = 0;			//the index of each node
 	temp.cursor = 0;			//the position of the cursor
-	temp.parents = new Array();	//a FILO stack to remeber the parent nodes
+	temp.nodeparents = new Array();	//a FILO stack to remeber the nodeparent nodes
 	
 	//calling the function that decides what to do for each character.
 	var nodesArray = basicParse(newick_string);
@@ -186,7 +260,7 @@ function basicParse(newick_string){
 			temp.cursor++; 
 			break;		
 		case ")":
-			temp.parents.pop(); //forget latest parent
+			temp.nodeparents.pop(); //forget latest nodeparent
 			temp.cursor++;
 			break;
 		case ";":
@@ -213,11 +287,11 @@ function newNode(name,nodes,newick_string){
 	
 	nodes[temp.index] = new Node(); //create a new node
 	
-	//we do things differently if this is a leaf (i.e. named) node or a parent node.
+	//we do things differently if this is a leaf (i.e. named) node or a nodeparent node.
 	if(name == null) {
 		nodes[temp.index].children = new Array(); //this node will have children
-		nodeLinker(nodes,newick_string); //link this node to its parent
-		temp.parents.push(temp.index); //add this node to the parent stack
+		nodeLinker(nodes,newick_string); //link this node to its nodeparent
+		temp.nodeparents.push(temp.index); //add this node to the nodeparent stack
 		
 	}else{
 		nodes[temp.index].name = name;
@@ -229,11 +303,11 @@ function newNode(name,nodes,newick_string){
 }
 
 // NODELINKER
-// Links the current node (temp.index) to its parent.
+// Links the current node (temp.index) to its nodeparent.
 function nodeLinker(nodes,newick_string){
-	if(temp.parents.length){
-		nodes[temp.index].parent = temp.parents[temp.parents.length-1]; //tell this node about its parents
-		nodes[nodes[temp.index].parent].children.push(temp.index); //tell its parent about its new child.
+	if(temp.nodeparents.length){
+		nodes[temp.index].nodeparent = temp.nodeparents[temp.nodeparents.length-1]; //tell this node about its nodeparents
+		nodes[nodes[temp.index].nodeparent].children.push(temp.index); //tell its nodeparent about its new child.
 	}
 }
 
@@ -245,8 +319,8 @@ function fixNode(nodes,n){
         if (n.children){
                 n.children=n.children.map(function(x){return nodes[x]});
         }
-        if(n.parent){
-                n.parent=nodes[n.parent];
+        if(n.nodeparent || n.nodeparent==0){
+                n.nodeparent=nodes[n.nodeparent];
         }
         return n;
 }
@@ -291,8 +365,8 @@ function doEnforceBi(node){
                         return;
                 }else if (node.children.length==1){
                         //remove ourself
-                        par = node.parent
-                        node.children[0].parent=par;
+                        par = node.nodeparent
+                        node.children[0].nodeparent=par;
                         for (var i=0; i < par.children.length; i++){
                                 if (par.children[i]==this){
                                         par.children[i]=node.children[0];
@@ -303,7 +377,7 @@ function doEnforceBi(node){
                         while(node.children.length>2){
                                 var newnode=new Node();
                                 newnode.children=node.children.slice(0,2);
-                                newnode.parent = node;
+                                newnode.nodeparent = node;
                                 node.children[1]=newnode; //overwrite child 1 and...
                                 node.children.shift(); // drop child 0
                         }
@@ -328,8 +402,8 @@ function unroot(root){
                 newchild = root.children[1];
         }
         newroot.children.push(newchild);
-        newchild.parent=newroot;
-        newroot.parent=undefined;
+        newchild.nodeparent=newroot;
+        newroot.nodeparent=undefined;
         return newroot;
 }
 

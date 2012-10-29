@@ -12,6 +12,7 @@ var SIM = 1;
 var POS = 2;
 var EVO = 3;
 
+
 // GETCHARACTERDISTANCE
 onmessage = function(e){
         var dat = JSON.parse(e.data);

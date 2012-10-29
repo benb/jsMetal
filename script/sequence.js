@@ -17,10 +17,7 @@ function sequence(name,content){
 var nextNodeID=0;
 var nodeIDs={}
 function nodeID(s){
-        if (!nodeIDs.hasOwnProperty(s)){
-                nodeIDs[s]=nextNodeID++;
-        }
-        return nodeIDs[s];
+        return s.toString() + "---";
 }
 
 // PARSER
@@ -134,7 +131,7 @@ function labeller(alignment,tree,doEvo,seqNum){
 				alignment[i].labeledContent[POS].push(-nextLabel);
 				// Add position information to evo-labelled gaps.
 				if(doEvo){
-					alignment[i].labeledContent[EVO][j]=-(alignment[i].labeledContent[EVO][j] * offset + nextLabel) ;
+					alignment[i].labeledContent[EVO][j]=alignment[i].labeledContent[EVO][j] + nextLabel ;
                                 }
 				
 			}
@@ -178,7 +175,6 @@ function evoLabeller(alignment,tree,seqNum){
 			
 			splits=tree.splitsFor(gapMemory);
 			for(var k=0;k<gapMemory.length;k++){
-				
 				alignment[names[gapMemory[k]]].labeledContent[EVO][j]=[nodeID(splits[gapMemory[k]].toString())];
 			}
 					
