@@ -27,6 +27,8 @@ function nodeID(s){
 // TODO: replace \w-\n with a proper selectable alphabet for each kind of sequence.
 
 function parser(alignmentString,alnName) {
+
+        console.log("PARSER");
 	
 	
 	//return array, name of each sequence (identifier) and content (actual sequence)
@@ -37,7 +39,7 @@ function parser(alignmentString,alnName) {
 	var seqparser = new RegExp("(^>.+)(?:\n)(^[^>]+)","mg");
 	G.sequenceType = "nucleotide";
 	var invalidCharacters = new RegExp("[^ABCDEFGHIKLMNOPQRSTUVWYZXabcdefghiklmnopqrstuvwyzx*-]");
-	var peptideOnlyCharacters = new RegExp("[EFILOPQZefilopqz*-]");
+	var peptideOnlyCharacters = new RegExp("[EFILOPQZefilopqz*]");
 										
 	
 	//to check all sequences are the same length 
@@ -56,6 +58,7 @@ function parser(alignmentString,alnName) {
 		}
 		
 		var isPeptide= content.search(peptideOnlyCharacters);
+                console.log("isPeptide? " + isPeptide);
 		if(isPeptide != -1){
 			G.sequenceType="amino acid";
 		}
