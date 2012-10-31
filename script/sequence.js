@@ -80,7 +80,6 @@ function parser(alignmentString,alnName) {
 
 function labeller(alignment,tree,doEvo,seqNum){	
 	var index;
-	var nextLabel;
 	var gapsHere=[];
 	for(var i =0; i<seqNum;i++){
 		alignment[i].labeledContent=[];
@@ -100,6 +99,7 @@ function labeller(alignment,tree,doEvo,seqNum){
 		index=0;
 			
 		
+                var nextLabel=0;
                 var offset=10000;
 		for(var j=0;j<alignment[i].content.length;j++){
 			
@@ -137,7 +137,6 @@ function labeller(alignment,tree,doEvo,seqNum){
 			}
 		}
 	}
-	//return gapsHere;
 }
 function nameLookup(alignment,seqNum){
 	names=new Object();
