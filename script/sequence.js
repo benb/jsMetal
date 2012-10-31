@@ -108,8 +108,6 @@ function labeller(alignment,tree,doEvo,seqNum){
 				// that appear before any character to be labelled as 0.
 				nextLabel = ++index;
 				
-				alignment[i].labeledContent[SSP].push(nextLabel);
-				alignment[i].labeledContent[SIM].push(nextLabel);
 				alignment[i].labeledContent[POS].push(nextLabel);
 				
 				if(doEvo){
@@ -124,9 +122,7 @@ function labeller(alignment,tree,doEvo,seqNum){
 			else{
 				//gapsHere[j]=true;
 				// Do not label gaps
-				alignment[i].labeledContent[SSP].push(0);
 				// Label gaps by sequence
-				alignment[i].labeledContent[SIM].push(0);
 				// Label gaps by position
 				alignment[i].labeledContent[POS].push(-nextLabel);
 				// Add position information to evo-labelled gaps.

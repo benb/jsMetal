@@ -35,8 +35,8 @@ function dssp(dist,c,l,r){
         }
 }
 function dseq(dist,c,l,r){
-        if (l<0){l=-1}
-        if (r<0){r=-1}
+        if (l<0){l=0}
+        if (r<0){r=0}
         return dgen(dist,c,l,r);
 }
 function dgen(dist,c,l,r){
@@ -56,6 +56,7 @@ function quickDistNew(alnA,alnB,hom){
         var totalLen=0;
         var alnDist=0;
         var distF;
+        var myhom=2;
         switch(hom){
                 case 0: 
                   distF=dssp;
@@ -68,6 +69,7 @@ function quickDistNew(alnA,alnB,hom){
                   break;
                 case 3:
                   distF=devol;
+                  myhom=3;
                   break;
         }
                         
@@ -92,7 +94,7 @@ function quickDistNew(alnA,alnB,hom){
                         var c=0;
                         for (var k=0; k < alnA.length; k++){
                                 if (k==i){continue;}
-                                var ans = distF(dist,c,alnA[k].labeledContent[hom][p1],alnB[k].labeledContent[hom][p2]);
+                                var ans = distF(dist,c,alnA[k].labeledContent[myhom][p1],alnB[k].labeledContent[myhom][p2]);
                                 dist=ans[0];
                                 c=ans[1];
                         }
