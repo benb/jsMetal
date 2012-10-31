@@ -100,12 +100,12 @@ function labeller(alignment,tree,doEvo,seqNum){
 		index=0;
 			
 		
+                var offset=10000;
 		for(var j=0;j<alignment[i].content.length;j++){
 			
 			if(alignment[i].content[j] != "-"){
 				// Label character and increase index. Using pre-increment on index to start at 1 and thus allow gaps
 				// that appear before any character to be labelled as 0.
-                                var offset=10000
 				nextLabel = ++index;
 				
 				alignment[i].labeledContent[SSP].push(nextLabel);
@@ -131,7 +131,7 @@ function labeller(alignment,tree,doEvo,seqNum){
 				alignment[i].labeledContent[POS].push(-nextLabel);
 				// Add position information to evo-labelled gaps.
 				if(doEvo){
-					alignment[i].labeledContent[EVO][j]=alignment[i].labeledContent[EVO][j] + nextLabel ;
+					alignment[i].labeledContent[EVO][j]=-(alignment[i].labeledContent[EVO][j] * offset + nextLabel) ;
                                 }
 				
 			}
@@ -175,7 +175,7 @@ function evoLabeller(alignment,tree,seqNum){
 			
 			splits=tree.splitsFor(gapMemory);
 			for(var k=0;k<gapMemory.length;k++){
-				alignment[names[gapMemory[k]]].labeledContent[EVO][j]=[nodeID(splits[gapMemory[k]].toString())];
+				alignment[names[gapMemory[k]]].labeledContent[EVO][j]=splits[gapMemory[k]];
 			}
 					
 		}

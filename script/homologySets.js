@@ -24,6 +24,7 @@ onmessage = function(e){
         var o = unpack(e.data);
         var newick_string = o.tree;
         functionHandler=function(f){
+                throw("WHAT");
                 f();
                 postMessage(pack({type:'status','msg':'done'}));
         }
@@ -78,7 +79,9 @@ function performHomologyWork(newick_string,alnA,seqNum){
                 tree=null;
                 doEvo=0;
         }
+        postMessage(pack({type:'status','msg':'1'}));
 	labeller(alnA,tree,doEvo,seqNum);
+        postMessage(pack({type:'status','msg':'2'}));
         return alnA;
 }
 

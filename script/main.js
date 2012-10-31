@@ -224,12 +224,14 @@ function doHomology(newick_string,aln,seqNum,end){
                         if (ans.type=='error'){
                                 throw ("ERROR: " + ans.msg);
                         }else if (ans.type=='status'){
-                                //console.log("A");
+                                dateStamp(ans.msg);
                         }else if (ans.type=='success') {
+                                dateStamp("Got MSG");
                                 gotAns(ans);
                         }
                 }
                 worker.postMessage(pack({tree:newick_string,aln:aln,seqNum:seqNum,set:3}));
+                dateStamp("Sent MSG");
         } else {
                 performHomologyWork(newick_string,aln,seqNum,3);
                 end();

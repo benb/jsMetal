@@ -1,3 +1,7 @@
+try{
+        importScripts('http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.3.3/underscore-min.js');                                                              
+}catch(e){
+}
 //methods on Nodes
 function Node(){
 }
@@ -26,9 +30,41 @@ Node.prototype.descendents=function(){
         //    var desc= _.filter(stack,function(x){return x.isLeaf()});
         //        return _.map(desc,function(x){return x.name});
 }
+Node.prototype.allSplits=function(){
+        var allLeaves = this.descendents().sort();
+        var stack;
+        stack=nodeList(this);
+        var splits=[];
+        for (var i=0; i < stack.length; i++){
+                if (stack[i].isLeaf()){
+                        splits.push([[stack[i].name],_.without(allLeaves,stack[i].name).sort()]);
+                }else{
+                        var d = stack[i].descendents().sort();
+                        splits.push([d,_.difference(allLeaves,d).sort()]);
+                }
+        }
+        return splits.sort();
+}
+Node.prototype.splitsIDs=_.memoize(function(){
+        var splits = this.allSplits();
+        var splitId={};
+        var i=0;
+        _.each(splits,function(spl){
+                splitId[spl[0]]=i;
+                splitId[spl[1]]=i;
+                i++;
+        });
+        return splitId;
+});
+
 Node.prototype.splitsFor=function(gap_leaves){
+        var splitID=this.splitsIDs();
         if (this.isRoot()){
-                return splitsForRoot(this,gap_leaves);
+                var list = splitsForRoot(this,gap_leaves);
+                _.chain(list).keys().each(function(x){
+                       list[x]=splitID[list[x].sort()];
+                });
+                return list;
         }else {
                 throw new Error("Only call Node#splitsFor on the root!");
         }
