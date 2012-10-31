@@ -357,6 +357,7 @@ function transparentAminoCSS(charDist,type){
 	var transparentCSS=[];
 	for(var i=0;i<G.sequenceNumber;i++){
 		transparentCSS[i]=[];
+                console.log("transparentAminoCSS " + type);
 		for(var k=0;k<G.origLengths[i];k++){
 			if(type==1){
 				opacity=charDist[i][k];				
@@ -365,7 +366,9 @@ function transparentAminoCSS(charDist,type){
 			}else{
 				opacity=1-charDist[i][k];
 			}
+                        console.log($("#alnA_"+i+"_"+k).css("background-color"));
 			transparentCSS[i].push($("#alnA_"+i+"_"+k).css("background-color").replace("rgb","rgba").replace(")",", "+opacity+")"));
+                        console.log(transparentCSS[i][k])
 			}
 		}
 	

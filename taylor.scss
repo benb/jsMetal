@@ -1,0 +1,42 @@
+/* taylor.scss */
+@function percentage($dist){
+        @return (100*$dist/255);
+}
+@mixin aa($aa,$dist){
+        $aacolor:#999999;
+        @if $aa==G{$aacolor: #ff9900}
+        @if $aa==A{$aacolor: #ccff00;}
+        @if $aa==P{$aacolor: #ffcc00;}
+        @if $aa==S{$aacolor: #ff3300;}
+        @if $aa==T{$aacolor: #ff6600;}
+        @if $aa==R{$aacolor: #0000ff;}
+        @if $aa==H{$aacolor: #0066ff;}
+        @if $aa==K{$aacolor: #6600ff;}
+        @if $aa==N{$aacolor: #cc00ff;}
+        @if $aa==D{$aacolor: #ff0000;}
+        @if $aa==Q{$aacolor: #ff00cc;}
+        @if $aa==E{$aacolor: #ff0066;}
+        @if $aa==C{$aacolor: #ffff00;}
+        @if $aa==I{$aacolor: #66ff00;}
+        @if $aa==L{$aacolor: #33ff00;}
+        @if $aa==M{$aacolor: #00ff00;}
+        @if $aa==V{$aacolor: #99ff00;}
+        @if $aa==F{$aacolor: #00ff66;}
+        @if $aa==W{$aacolor: #00ccff;}
+        @if $aa==Y{$aacolor: #00ffcc;}
+        @if $aa==X{$aacolor: #666666;}
+        @if $aa==U{$aacolor: #666666;}
+        //background-color:lighten(desaturate($aacolor,percentage($dist)),percentage($dist));
+        background-color:mix($aacolor,white,percentage($dist));
+}
+
+@each $aa in G, A, P, S, T, R, H, K, N, D, Q, E, C, I, L, M, V, F, W, Y, X, U{
+        @for $distance from 0 through 255 {
+                span.#{$aa}.dist#{$distance}.clickable {
+                        @include aa($aa,$distance);
+                }
+        }
+}
+
+  
+

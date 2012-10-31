@@ -35,6 +35,9 @@ onmessage = function(e){
         
         try{
                 alnA=performHomologyWork(newick_string,alnA,o.seqNum);
+                if (alnA[0].labeledContent[EVO]){
+                        doEvo=1;
+                }
         }catch(e){
                 if (e.message){
 
@@ -50,7 +53,7 @@ onmessage = function(e){
                 return;
         }
 
-        postMessage(pack({'type':'success','ans':alnA,'doEvo':1}));
+        postMessage(pack({'type':'success','ans':alnA,'doEvo':doEvo}));
         
 }
 

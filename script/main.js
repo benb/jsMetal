@@ -212,6 +212,9 @@ function doHomology(newick_string,aln,seqNum,end){
         var gotAns=function(ans){
                 if (alnA===aln){
                         alnA=ans.ans;
+                        G.doEvo=ans.doEvo;
+                        console.log("doEvo? " + ans.doEvo);
+                        homType=2+G.doEvo;
                 }else if (alnB===aln){
                         alnB=ans.ans;
                 }
@@ -290,8 +293,10 @@ function vis(){
                 if (G.doEvo){
                         $("#evol").removeAttr("disabled");
                         $("#evol").html("evol (recommended)");
-                        $("#pos").html("pos");
+                        $("#pos").html("pos");                                                                                                                      
                         $("#homologyType").val(homType);
+                }else {
+                        $("#evol").remove();
                 }
                 $("#homologyType").kendoDropDownList();
 		$("#distanceVisualizationPanel").css("display","inline");
@@ -441,28 +446,9 @@ function vis(){
                 var distVisHandler = function () {
 			$("#distanceVisualizationType option:selected").each(function () {
 				
-				var visType=parseInt($(this).val());
-				switch (visType){
-				case 2:
-					$("#seqColour").attr('href','./'+G.sequenceType+'.css');
-					changeDistanceVisualization();
-					break;
-				case 3:
-					$("#seqColour").attr('href','./redfade.css');
-					changeDistanceVisualization();
-					//$("#visual").attr('href','./redfade.css');
-					
-					break;
-				default:
-					$("#seqColour").attr('href','./'+G.sequenceType+'.css');
-					if(cssCache[homType][visType] == undefined){
-						cssCache[homType][visType] = [];
-						cssCache[homType][visType]=transparentAminoCSS(distances.character[homType],visType);
-					}
-					changeDistanceVisualization(cssCache[homType][visType]);
-					
-					break;
-				}
+				var visType=$(this).val();
+                                console.log(visType);
+                                $("#seqColour").attr('href','css/'+visType+'.css');
 				
 				});
 			};
@@ -493,14 +479,10 @@ function bindings(){
 			var roundedAlnDistance=Math.round((distances.alignment[homType]*1000000))/1000000;
 			$("#alnDist").text(roundedAlnDistance);
 			
+                        var visType=parseInt($('#distanceVisualizationType option:selected').val());
 			if(G.visualize){
                                 applyCSS(alnAF[0],alnAF[1][homType]());
                                 applyCSS(alnBF[0],alnBF[1][homType]());
-				if(cssCache[homType][visType] == undefined){
-					cssCache[homType][visType] = [];
-					cssCache[homType][visType]=transparentAminoCSS(distances.character[homType],visType);
-				}
-				changeDistanceVisualization(cssCache[homType][visType]);
                                 recalculateSparklines();
                                 redisplaySparklines();
                                 recalculateMinilines();

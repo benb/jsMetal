@@ -5,9 +5,9 @@
         <link rel="stylesheet" href="http://cdn.kendostatic.com/2012.2.710/styles/kendo.common.min.css">
         <link rel="stylesheet" href="http://cdn.kendostatic.com/2012.2.710/styles/kendo.default.min.css">
 
-	<link rel="stylesheet" type="text/css" media="all" href="style.css" />
+	<link rel="stylesheet" type="text/css" media="all" href="css/style.css" />
 	
-	<link rel="stylesheet" type="text/css" id="seqColour" href="./nucleotide.css" /> 
+	<link rel="stylesheet" type="text/css" id="seqColour" href="" /> 
         <!--     <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/smoothness/jquery-ui.css"/> -->
         
         <link href='http://fonts.googleapis.com/css?family=Vollkorn:400italic,400' rel='stylesheet' type='text/css'>
@@ -121,17 +121,19 @@
 		<div id="homologyPanel" style="display:inline; float:left;">
 			<p style="float:left;">Distance: 
 			<select name="homologyType" id="homologyType" style="width:150px">
-				<option name="homologyOption" id="ssp" value="0" disabled>SSP (please wait)</option>
-				<option name="homologyOption" id="simple" value="1" disabled>seq (please wait)</option>
-				<option name="homologyOption" id="pos" disabled="disabled" value="2" selected="selected">pos (please wait)</option>
+				<option name="homologyOption" id="ssp" value="0" disabled>SSP</option>
+				<option name="homologyOption" id="simple" value="1" disabled>seq</option>
+				<option name="homologyOption" id="pos" disabled="disabled" value="2" selected="selected">pos (recommended)</option>
 				<option name="homologyOption" id="evol" disabled="disabled" value="3" />(no Newick tree provided)</option>
 			</select></p>
                                 <p style="float:left;">Colour scheme: 
                                 <select name="distanceVisualizationType" id="distanceVisualizationType" autocomplete="off" style="width:200px">
-                                        <option name="distanceVisualizationOption" id="diffOpacity" selected="selected" value="1" >Taylor (Fade close)</option>
-                                        <option name="distanceVisualizationOption" id="sameOpacity" value="0">Taylor (Fade distant)</option>
-                                        <option name="distanceVisualizationOption" id="noDistance" value="2">Taylor colours (distances not shown)</option>
-                                        <option name="distanceVisualizationOption" id="redfade" value="3" >White &rarr;  Red</option>
+                                        <option name="distanceVisualizationOption" value="taylor-fade-close" selected="selected"  >Taylor (Fade close)</option>
+                                        <option name="distanceVisualizationOption" value="taylor-fade-distant" >Taylor (Fade distant)</option>
+                                        <option name="distanceVisualizationOption" value="taylor" >Taylor</option>
+                                        <option name="distanceVisualizationOption" value="redfade"  >White &rarr; Red</option>
+                                        <option name="distanceVisualizationOption" value="hydrophobicity-fade-close"  >Hydrophobicity (Fade close)</option>
+                                        <option name="distanceVisualizationOption" value="hydrophobicity-fade-distant" >Hydrophobicity (Fade distant)</option>
                                 </select></p>
                         <div style="display:inline;">
                                 <button type="button" class="k-button" name="button" id="showCharDists">Distances per character (as CSV)</button>
