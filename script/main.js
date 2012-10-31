@@ -162,9 +162,11 @@ function process1(){
 		//parse and check syntax of alignments
 		alnA = parser( $("#alignment1").val(),"alignment 1" );
 		alnB = parser( $("#alignment2").val(),"alignment 2" );
-		//switch character colouring to appropriate scheme
-		$("#seqColour").attr('href','./'+G.sequenceType+'.css');
-		
+                if (G.sequenceType=='nucleotide'){
+                        $("#distanceVisualizationType").html($("#nuc-distanceVisualizationType").html());
+                }
+                $("#nuc-distanceVisualizationType").remove();
+	        $("#distanceVisualizationType").kendoDropDownList();	
 		alnA.sort(nameSorter);
 		alnB.sort(nameSorter);
 		
@@ -271,14 +273,6 @@ function process3(){
 	
 		
 	$("#controlPanel").css("display","");
-        if (G.sequenceType=="amino acid"){
-                $("#sameOpacity").html("Taylor (Fade distant)");
-                $("#diffOpacity").html("Taylor (Fade close)");
-        }else {
-                $("#sameOpacity").html("Fade distant "+G.sequenceType+"s");
-                $("#diffOpacity").html("Fade close "+G.sequenceType+"s");
-        }
-	
 	$("#input").remove();
 	$("#instructions").remove();
 
@@ -445,7 +439,6 @@ function vis(){
 		
                 var distVisHandler = function () {
 			$("#distanceVisualizationType option:selected").each(function () {
-				
 				var visType=$(this).val();
                                 console.log(visType);
                                 $("#seqColour").attr('href','css/'+visType+'.css');

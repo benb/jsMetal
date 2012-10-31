@@ -44,7 +44,6 @@
                         closeOnEscape: false,
                         resizable: false
                      });
-                     $("#distanceVisualizationType").kendoDropDownList();
 
 
                         _.each(["#newickFile","#alignment1File","#alignment2File"],function(b){
@@ -134,7 +133,15 @@
                                         <option name="distanceVisualizationOption" value="redfade"  >White &rarr; Red</option>
                                         <option name="distanceVisualizationOption" value="hydrophobicity-fade-close"  >Hydrophobicity (Fade close)</option>
                                         <option name="distanceVisualizationOption" value="hydrophobicity-fade-distant" >Hydrophobicity (Fade distant)</option>
+                                </select>
+                                <select name="nuc-distanceVisualizationType" id="nuc-distanceVisualizationType" autocomplete="off" style="width:200px;display:none;">
+                                        <option name="distanceVisualizationOption" value="redfade"  >White &rarr; Red</option>
+                                        <option name="distanceVisualizationOption" value="nucleotide-fade-close" >Nucleotide (Fade distant)</option>
+                                        <option name="distanceVisualizationOption" value="nucleotide-fade-distant" >Nucleotide (Fade distant)</option>
+                                        <option name="distanceVisualizationOption" value="nucleotide" >Nucleotide</option>
                                 </select></p>
+
+
                         <div style="display:inline;">
                                 <button type="button" class="k-button" name="button" id="showCharDists">Distances per character (as CSV)</button>
                                 <button type="button" class="k-button" name="button" id="showSeqDists">Distances per sequence</button>
