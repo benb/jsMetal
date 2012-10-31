@@ -21,18 +21,63 @@ onmessage = function(e){
         postMessage(JSON.stringify({"type":"success","distances":dist}));
 }
 
+function dssp(dist,c,l,r){
+        if (l==r && l>0){
+                //match
+                return [dist,c+1];
+        }
+        if (l>0 && r>0){//neither gaps and different
+                return [dist+2,c+2];
+        }else if (l>0 || r>0){// one is gap
+                return [dist+1,c+1];
+        }else {
+                return [dist,c];
+        }
+}
+function dseq(dist,c,l,r){
+        if (l<0){l=-1}
+        if (r<0){r=-1}
+        return dgen(dist,c,l,r);
+}
+function dgen(dist,c,l,r){
+        if (l!=r){
+                return[dist+1,c+1];
+        }else {
+                return[dist,c+1];
+        }
+}
+var dpos=dgen;
+var devol=dgen;
+
 function quickDistNew(alnA,alnB,hom){
         console.log("quickDistNew " + hom);
         var dists=[];
         var seqDists=[];
         var totalLen=0;
         var alnDist=0;
+        var distF;
+        switch(hom){
+                case 0: 
+                  distF=dssp;
+                  break;
+                case 1:
+                  distF=dseq;
+                  break;
+                case 2:
+                  distF=dpos;
+                  break;
+                case 3:
+                  distF=devol;
+                  break;
+        }
+                        
         for (var i=0; i < alnA.length; i++){
                 dists[i]=[];
                 seqDists[i]=0.0;
                 var p1=0;
                 var p2=0;
 
+                var alnLen=0;
                 while (p1<alnA[i].content.length && p2<alnB[i].content.length){
                         //fast forward to non-gaps
                         if(alnA[i].content[p1]=="-"){
@@ -44,21 +89,23 @@ function quickDistNew(alnA,alnB,hom){
                                 continue;
                         }
                         var dist=0.0;
+                        var c=0;
                         for (var k=0; k < alnA.length; k++){
                                 if (k==i){continue;}
-                                if (alnA[k].labeledContent[hom][p1] != alnB[k].labeledContent[hom][p2]){
-                                        dist++;
-                                }
+                                var ans = distF(dist,c,alnA[k].labeledContent[hom][p1],alnB[k].labeledContent[hom][p2]);
+                                dist=ans[0];
+                                c=ans[1];
                         }
-                        dist/=(alnA.length-1);
-                        dists[i].push(dist);
                         seqDists[i]+=dist;
                         alnDist+=dist;
-                        totalLen++;
+                        dist/=c;
+                        dists[i].push(dist);
+                        alnLen+=c;
                         p1++;
                         p2++;
                 }
-                seqDists[i]/=dists[i].length;
+                totalLen+=alnLen;
+                seqDists[i]/=alnLen;
         }
         var ans = {};
         ans.character=dists;
