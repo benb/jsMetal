@@ -268,7 +268,7 @@ function visibleRange(alnAView,columns){
         if (fractionEnd>columns){fractionEnd=columns};
         return [fractionStart,Math.floor((fractionStart+fractionEnd)/2),fractionEnd];
 }
-function applyColumnDist(colDist,alnAView,target,width,clickReceiver){
+function applyColumnDist(colDist,density,alnAView,target,width,clickReceiver){
         var range = visibleRange(alnAView,colDist.length)
         var fractionStart=range[0];
         var fractionEnd=range[2];
@@ -286,6 +286,7 @@ function applyColumnDist(colDist,alnAView,target,width,clickReceiver){
         barWidth=(width / colDist.length) - 2;
         //console.log(barWidth);
         target.sparkline(colDist,{type:'bar',height:"30px",chartRangeMax:1.0,barWidth:barWidth,barSpacing:2,colorMap:map});
+        target.sparkline(density,{composite:true,lineColor: 'black',fillColor:false});
 }
 
 

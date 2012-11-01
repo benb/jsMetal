@@ -170,6 +170,9 @@ function process1(){
 		alnA.sort(nameSorter);
 		alnB.sort(nameSorter);
 		
+                alnADensity=calcDensity(alnA);
+                alnBDensity=calcDensity(alnB);
+
 		//Check the mutual consistency of both alignments and gather a few global characteristics
 		var seqDetails = checkConsistency(alnA,alnB);
 		
@@ -239,6 +242,10 @@ function doHomology(newick_string,aln,seqNum,end){
                 dateStamp("Sent MSG");
         } else {
                 performHomologyWork(newick_string,aln,seqNum,3);
+                if (aln[0].labeledContent[EVO]){
+                        G.doEvo=1;
+                        homType=3;
+                }
                 end();
         }
         
@@ -566,8 +573,8 @@ function recalculateSparklines(){
                 redisplaySparklines = _.throttle(doRedisplaySparklines,1000);
 }
 function doRedisplaySparklines(){
-                applyColumnDist(colDistA,$("#alnA_seqs"),$("#alnA_sparkline"),$("#alnA_seqs").width(),sparkLineClickA);
-                applyColumnDist(colDistB,$("#alnB_seqs"),$("#alnB_sparkline"),$("#alnB_seqs").width(),sparkLineClickB);
+                applyColumnDist(colDistA,alnADensity,$("#alnA_seqs"),$("#alnA_sparkline"),$("#alnA_seqs").width(),sparkLineClickA);
+                applyColumnDist(colDistB,alnBDensity,$("#alnB_seqs"),$("#alnB_sparkline"),$("#alnB_seqs").width(),sparkLineClickB);
 }
 
 
@@ -580,5 +587,22 @@ function recalculateMinilines(){
        }
        var t2 = new Date();
        console.log(t2-t1);
+}
 
+function calcDensity(aln){
+        var ans = [];
+        for (var i=0; i < aln.length; i++){
+                for (var j=0; j < aln[i].content.length; j++){
+                        if (aln[i].content[j]!="-"){
+                                if (!ans[j]){
+                                        ans[j]=0;
+                                }
+                                ans[j]++;
+                        }
+                }
+        }
+        for (var i=0; i < ans.length; i++){
+                ans[i]/=aln.length;
+        }
+        return ans;
 }

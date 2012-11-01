@@ -28,8 +28,6 @@ function nodeID(s){
 
 function parser(alignmentString,alnName) {
 
-	
-	
 	//return array, name of each sequence (identifier) and content (actual sequence)
 	var parsedSequences = new Array(); 
 	var name;
@@ -168,7 +166,6 @@ function evoLabeller(alignment,tree,seqNum){
 
 		
 		if(gapMemory.length>0){
-			
 			splits=tree.splitsFor(gapMemory);
 			for(var k=0;k<gapMemory.length;k++){
 				alignment[names[gapMemory[k]]].labeledContent[EVO][j]=splits[gapMemory[k]];

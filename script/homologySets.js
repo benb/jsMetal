@@ -10,9 +10,6 @@ try{
         //don't care
 }
 
-var functionHandler=function(f){
-        _.defer(f);
-}
 
 //var pack = function(x){return msgpack.pack(x,true);}
 //var unpack = function(x){return msgpack.unpack(x);}
@@ -23,11 +20,6 @@ var unpack = function(x){return JSON.parse(x);}
 onmessage = function(e){
         var o = unpack(e.data);
         var newick_string = o.tree;
-        functionHandler=function(f){
-                throw("WHAT");
-                f();
-                postMessage(pack({type:'status','msg':'done'}));
-        }
 
         var tree;
         var doEvo=0;
@@ -82,68 +74,14 @@ function performHomologyWork(newick_string,alnA,seqNum){
                 tree=null;
                 doEvo=0;
         }
+        try{
         postMessage(pack({type:'status','msg':'1'}));
+        }catch(e){}
 	labeller(alnA,tree,doEvo,seqNum);
+        try{
         postMessage(pack({type:'status','msg':'2'}));
+        }catch(e){}
         return alnA;
-}
-
-function getHomologySets(aln,tree,doEvo,seqNum){	
-        var sets=[];
-        var gapsHere;
-        for (var i=0; i < 2+doEvo; i++){
-                var ans = getHomologySet(i,aln,tree,doEvo,seqNum);
-                sets[i]=ans[0];
-                gapsHere=ans[1];
-        }
-        return [sets,gapsHere];
-
-}
-function getHomologySet(hom,aln,tree,doEvo,seqNum){
-	var aln=resortNonOverlapping(aln,seqNum);
-	labeller(aln,tree,doEvo,seqNum);
-	var gapsHere=[];
-	var homologySets = [];
-        var innerLoop=function(hom,i,j,jNoGap){
-                homologySets[hom][i][jNoGap]=[];
-                for(var k=0;k<aln.length;k++){
-                        if(aln[k].content[j]  == "-"){
-                                gapsHere[jNoGap]=true;
-                        }
-
-                        if(k!=i && aln[k].content[j]){
-
-                                homologySets[hom][i][jNoGap].push(aln[k].labeledContent[hom][j]);
-
-                        }
-                }
-        }
-
-		
-		
-		homologySets[hom]=[];
-		for (var i=0;i<aln.length;i++){
-			homologySets[hom][i]=[];
-			jNoGap=0;
-		 	
-			for ( var j=0;j<aln[i].content.length;j++){
-				
-				if(aln[i].content[j]  != "-"){
-                                        
-                                        var myH=hom;
-                                        var myI=i;
-                                        var myJ=j;
-                                        var myGap=jNoGap;
-                                        var f = _.bind(innerLoop,{},myH,myI,myJ,myGap)
-                                        functionHandler(f);
-                                        jNoGap++;
-				}
-					
-					
-			}
-		}
-		
-        return [homologySets[hom],gapsHere];
 }
 
 
