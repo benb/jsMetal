@@ -168,20 +168,22 @@ function makeOutput(distances,homType,alnA){
 }*/
 ////////////////////////////////////
 function makeOutput(distances,homType,alnA){
-	var $outputTable1=$("<table/>").attr("id","output");
+	var $outputTable1=$("<div/>").attr("id","output");
 	var $outputTable2=$("<table/>").attr("id","output");
 
 	var roundedAlnDistance=Math.round((distances.alignment[homType]*1000000))/1000000;
 	
 	if(G.visualize){
-                var $charDistTR=$("<tr />");
-		$charDistTR.append($("<td />").append("Alignment distance:"));
-                $charDistTR.append($("<td />").attr("id","alnDist").text(roundedAlnDistance));
-
-		$charDistTR.append($("<td />").append("Distance for focused character:"));
-                $charDistTR.append($("<td />").attr("id","charDist").css("font-weight","bold"));
-
+                var $charDistTR=$("<table/>").css("display","inline").css("float","left").append($("<tr />"));
+		$charDistTR.append($("<td />").append("Total alignment distance:"));
+                $charDistTR.append($("<td />").attr("id","alnDist").css("width","8em").css("font-weight","bold").text(roundedAlnDistance));
 		$outputTable1.append($charDistTR);
+
+                var $charDistTR=$("<table/>").css("display","inline").css("float","right").append($("<tr />"));
+		$charDistTR.append($("<td />").append("Focused character distance:"));
+                $charDistTR.append($("<td />").attr("id","charDist").css("font-weight","bold").css("width","5em"));
+		$outputTable1.append($charDistTR);
+
 	}
 	
 	var $alnDistTR=$("<tr/>");
@@ -283,9 +285,9 @@ function applyColumnDist(colDist,density,alnAView,target,width,clickReceiver){
                 map.push("blue");
         }
         target.css("width",width+"px");
-        barWidth=(width / colDist.length) - 2;
-        //console.log(barWidth);
-        target.sparkline(colDist,{type:'bar',height:"30px",chartRangeMax:1.0,barWidth:barWidth,barSpacing:2,colorMap:map});
+        barWidth=(width / colDist.length);
+        console.log(width + " " + colDist.length + " " + barWidth);
+        target.sparkline(colDist,{type:'bar',height:"30px",chartRangeMax:1.0,barWidth:barWidth,barSpacing:0,colorMap:map});
         target.sparkline(density,{composite:true,lineColor: 'black',fillColor:false});
 }
 

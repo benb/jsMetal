@@ -394,7 +394,7 @@ function vis(){
 
                         oldCentral=central;
 
-                        $("#charDist").text(distances.character[homType][focusSeq][central]);
+                        $("#charDist").text(Math.round(distances.character[homType][focusSeq][central]*1000)/1000);
                         $("#alnA"+"_"+focusSeq+"_"+central).addClass("centralChar");
                         $("#alnB"+"_"+focusSeq+"_"+central).addClass("centralChar");
                 }
@@ -517,7 +517,17 @@ function bindings(){
 
         var resizeBoxes = function(){
                 var height = $(window).height();
-                var targetHeight = height/2-120;
+                //distance to top of visualiser
+                var otherHeight=$("#visualiser").offset().top 
+                //padding on visualiser
+                otherHeight+=$("#visualiser").outerHeight(true);                                                                                                
+                otherHeight-=$("#alnA_seqs").outerHeight(true);                                                                                                
+                otherHeight-=$("#alnB_seqs").outerHeight(true);                                                                                                
+               
+                //output at bottom
+                otherHeight+=$("#output table").outerHeight(true);
+
+                var targetHeight = (height-otherHeight)/2;
                 $("#alnA_seqs").css("height",targetHeight);
                 $("#alnA_names").css("height",targetHeight);
                 $("#alnB_seqs").css("height",targetHeight);
@@ -582,7 +592,7 @@ function recalculateMinilines(){
        var t1 = new Date();
        for (var i=0; i < distances.sequence[homType].length; i++){
                var target = $(".miniline_"+i);
-               target.css("width","50%");
+               target.css("width","30%");
                target.html("<img src='png/"+Math.floor(distances.sequence[homType][i]*100)+".png' title='"+distances.sequence[homType][i]+"' height='10px' style='max-width:100%'/>")
        }
        var t2 = new Date();
