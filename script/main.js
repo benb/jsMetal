@@ -125,7 +125,7 @@ function example(i){
 function supports_web_workers() {
         return !!window.Worker;
 }
-var useWorkers=supports_web_workers();//supports_web_workers();//supports_web_workers();
+var useWorkers=supports_web_workers();
 var START = new Date();
 
 function dateStamp(string){

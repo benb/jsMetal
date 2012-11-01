@@ -83,17 +83,33 @@ Node.prototype.findNodeWithNoneDesc=function(desc){
         }
         return null;
 }
+//copy this and attach as child of node
 Node.prototype.downCopy=function(node){
-        var copy=new Node()
-        copy.name=this.name;
-        copy.id=this.id;
-        copy.nodeparent=node;
-        copy.children=[];
-        node.children.push(copy);
-        _.each(this.children,function(x){x.downCopy(copy)});
-        if (copy.children.length==0){
-                delete(copy.children)
-        }
+        var stack=nodeList(this);
+        var stackH=[];
+        _.each(stack,function(x){
+                var copy=new Node();
+                if (x.name){
+                        copy.name=x.name;
+                }
+                copy.id=x.id;
+                stackH[copy.id]=copy;
+        });
+
+        _.each(stack,function(x){
+                var copy=stackH[x.id];
+                if (x.nodeparent){
+                        copy.nodeparent=stackH[x.nodeparent.id];
+                }
+                if (x.children){
+                        copy.children=[];
+                        _.each(x.children,function(y){
+                                copy.children.push(stackH[y.id]);
+                        });
+                }
+        });
+        stackH[this.id].nodeparent=node;
+        node.children.push(stackH[this.id]);
 }
 var c=0;
 Node.prototype.upCopy=function(newX,oldX){
