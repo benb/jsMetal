@@ -20,6 +20,7 @@ var sparkLineClickA;
 var sparkLineClickB;
 var homType=2;
 
+
 //Global object (container for a few general features and options that should be easily available)
 var G = {};
 
@@ -141,7 +142,10 @@ function process() {
 	$("#errorBox").css("display","none");
 	
         $("#dialogtext").html("Calculation of homology sets");
-        $("#dialog").dialog("open");
+        dialogBox.center();
+        dialogBox.open();
+      //  $("#dialog").dialog("open");
+        
         dateStamp("end process()")
         _.defer(process1);
 
@@ -166,7 +170,10 @@ function process1(){
                         $("#distanceVisualizationType").html($("#nuc-distanceVisualizationType").html());
                 }
                 $("#nuc-distanceVisualizationType").remove();
-	        $("#distanceVisualizationType").kendoDropDownList();	
+	        $("#distanceVisualizationType").kendoDropDownList({autoBind:true});	
+                //hack:
+                $("#distanceVisualizationType").data("kendoDropDownList").toggle();
+                $("#distanceVisualizationType").data("kendoDropDownList").toggle();
 		alnA.sort(nameSorter);
 		alnB.sort(nameSorter);
 		
@@ -194,7 +201,8 @@ function process1(){
 	{
 		$("#errorBox").html("<b>ERROR: "+e+"</b>");
 		$("#errorBox").fadeIn();
-                $("#dialog").dialog("close");
+                //$("#dialog").dialog("close");
+                dialogBox.close();
 		return;
 	}
 	
@@ -299,7 +307,10 @@ function vis(){
                 }else {
                         $("#evol").remove();
                 }
-                $("#homologyType").kendoDropDownList();
+                $("#homologyType").kendoDropDownList({autoBind:true});
+
+                $("#homologyType").data("kendoDropDownList").toggle();
+                $("#homologyType").data("kendoDropDownList").toggle();
 		$("#distanceVisualizationPanel").css("display","inline");
 		cssCache=[[],[],[],[]];
 		
@@ -385,8 +396,8 @@ function vis(){
                 redisplaySparklines();
 
                 recalculateMinilines();
-           //     $("#alnB_sparkline").bind('sparklineClick',sparkLineClickB);
-           //     $("#alnA_sparkline").bind('sparklineClick',sparkLineClickA);
+                $("#alnB_sparkline").bind('sparklineClick',sparkLineClickB);
+                $("#alnA_sparkline").bind('sparklineClick',sparkLineClickA);
                 var clickChar=function(){
                         //this sets the focused character to [focusSeq][central]
                         $("#alnA"+"_"+oldFocusSeq+"_"+oldCentral).removeClass("centralChar");
@@ -461,7 +472,7 @@ function vis(){
 		$("#distanceVisualizationType").change(distVisHandler);
 
 	}
-        _.defer(function(){$("#dialog").dialog("close");});
+        _.defer(function(){dialogBox.close(); });
         _.defer(bindings);
         dateStamp("end vis()")
        	
