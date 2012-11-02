@@ -19,6 +19,7 @@ var colDistB;
 var sparkLineClickA;
 var sparkLineClickB;
 var homType=2;
+var sparklineDistanceType=true;
 
 
 //Global object (container for a few general features and options that should be easily available)
@@ -331,7 +332,22 @@ function vis(){
 		var $visualiser = makeVisualiser($alnASeqDiv,$alnBSeqDiv,alnA,alnB);
 		
 		$("body").append($visualiser);
-		
+
+                $("#distanceToggle").click(function(){
+                        console.log("CLICK");
+                        sparklineDistanceType=!sparklineDistanceType;
+                        if (sparklineDistanceType){
+                                $(this).html("similarity");
+                        }else{
+                                $(this).html("distance");
+                        }
+                        doRedisplaySparklines();
+                });
+                if (sparklineDistanceType){
+                        $("#distanceToggle").html("similarity");
+                }else {
+                        $("#distanceToggle").html("distance");
+                }
                 applyCSS(alnAF[0],alnAF[1][homType]());
                 applyCSS(alnBF[0],alnBF[1][homType]());
 
@@ -599,8 +615,9 @@ function recalculateSparklines(){
                 redisplaySparklines = _.throttle(doRedisplaySparklines,1000);
 }
 function doRedisplaySparklines(){
-                applyColumnDist(colDistA,alnADensity,$("#alnA_seqs"),$("#alnA_sparkline"),$("#alnA_seqs").width(),sparkLineClickA);
-                applyColumnDist(colDistB,alnBDensity,$("#alnB_seqs"),$("#alnB_sparkline"),$("#alnB_seqs").width(),sparkLineClickB);
+        console.log("distance " + sparklineDistanceType);
+                applyColumnDist(colDistA,alnADensity,$("#alnA_seqs"),$("#alnA_sparkline"),$("#alnA_seqs").width(),sparklineDistanceType);
+                applyColumnDist(colDistB,alnBDensity,$("#alnB_seqs"),$("#alnB_sparkline"),$("#alnB_seqs").width(),sparklineDistanceType);
 }
 
 
