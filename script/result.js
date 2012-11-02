@@ -270,25 +270,35 @@ function visibleRange(alnAView,columns){
         if (fractionEnd>columns){fractionEnd=columns};
         return [fractionStart,Math.floor((fractionStart+fractionEnd)/2),fractionEnd];
 }
-function applyColumnDist(colDist,density,alnAView,target,width,clickReceiver){
+function applyColumnDist(colDist,density,alnAView,target,width){
         var range = visibleRange(alnAView,colDist.length)
         var fractionStart=range[0];
         var fractionEnd=range[2];
-        var map=[];
-        for (var i=0; i < fractionStart; i++){
-                map.push("blue");
+        var normal=[];
+        var highlight=[];
+        for (var i=0; i < fractionStart-1; i++){
+                normal.push(colDist[i]);
+                highlight.push(null);
         }
-        for (var i=fractionStart; i<fractionEnd; i++){
-                map.push("red");
+                normal.push(colDist[fractionStart-1]);
+                highlight.push(colDist[fractionStart-1]);
+        for (var i=fractionStart; i<fractionEnd-1; i++){
+                highlight.push(colDist[i]);
+                normal.push(null);
         }
+                normal.push(colDist[fractionEnd-1]);
+                highlight.push(colDist[fractionEnd-1]);
+
         for (var i=fractionEnd; i<colDist.length; i++){
-                map.push("blue");
+                normal.push(colDist[i]);
+                highlight.push(null);
         }
         target.css("width",width+"px");
-        barWidth=(width / colDist.length);
+        barWidth=Math.max((width / colDist.length),1);
         console.log(width + " " + colDist.length + " " + barWidth);
-        target.sparkline(colDist,{type:'bar',height:"30px",chartRangeMax:1.0,barWidth:barWidth,barSpacing:0,colorMap:map});
-        target.sparkline(density,{composite:true,lineColor: 'black',fillColor:false});
+        target.sparkline(normal,{height:"30px",chartRangeMax:1.0,width:width,fillColor:'blue',lineColor:false,disableTooltips:true,disableHighlight:true});
+        target.sparkline(highlight,{chartRangeMax:1.0,composite:true,lineColor: 'red', fillColor:'red',disableTooltips:true,disableHighlight:true});
+        target.sparkline(density,{composite:true,lineColor: 'black',fillColor:false,disableTooltips:true,disableHighlight:true});
 }
 
 

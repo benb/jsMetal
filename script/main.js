@@ -367,13 +367,16 @@ function vis(){
                 }
 	
                 sparkLineClickA = function(event){
-                        central = event.sparklines[0].getCurrentRegionFields()[0].offset;
+                        console.log("GOT CLICK");
+                        console.log(event.sparklines);
+                        console.log(event.sparklines[0].getCurrentRegionFields());
+                        central = event.sparklines[0].getCurrentRegionFields().offset;
                         central = central-cGapsA[focusSeq][central];
                         clickChar();
                         focusCentral();
                 }
                 sparkLineClickB = function(event){
-                        central = event.sparklines[0].getCurrentRegionFields()[0].offset;
+                        central = event.sparklines[0].getCurrentRegionFields().offset;
                         central = central-cGapsB[focusSeq][central];
                         clickChar();
                         focusCentral();
@@ -382,8 +385,8 @@ function vis(){
                 redisplaySparklines();
 
                 recalculateMinilines();
-                $("#alnB_sparkline").bind('sparklineClick',sparkLineClickB);
-                $("#alnA_sparkline").bind('sparklineClick',sparkLineClickA);
+           //     $("#alnB_sparkline").bind('sparklineClick',sparkLineClickB);
+           //     $("#alnA_sparkline").bind('sparklineClick',sparkLineClickA);
                 var clickChar=function(){
                         //this sets the focused character to [focusSeq][central]
                         $("#alnA"+"_"+oldFocusSeq+"_"+oldCentral).removeClass("centralChar");
@@ -409,11 +412,10 @@ function vis(){
 			central = alnBCharacterAt[focusSeq][$(event.target).closest("span").index() - padChars];
                         clickChar();
 		});
-                var throttleSpeed=500;
+                var throttleSpeed=200;
 	
-                scrollA=_.throttle(function(ev){
+                scrollA=_.debounce(function(ev){
                         console.log("SCROLL A");
-                                $("#alnA_names").scrollTop($("#alnA_seqs").scrollTop());
                                 var range = visibleRange($("#alnA_seqs"),alnA[0].content.length);
 
                                 central=alnACharacterAt[focusSeq][Math.round($("#alnA_seqs").scrollLeft()/charWidth)];
@@ -422,14 +424,15 @@ function vis(){
                                 $("#alnB_seqs").off('scroll');
                                 $("#alnB_seqs").scrollLeft(alnBPositionOf[focusSeq][central]*charWidth);
                                 $("#alnB_seqs").scrollTop($("#alnA_seqs").scrollTop());
+                                $("#alnA_names").scrollTop($("#alnA_seqs").scrollTop());
+                                $("#alnB_names").scrollTop($("#alnA_seqs").scrollTop());
                                 redisplaySparklines();
                                 _.defer(function(){ $("#alnB_seqs").on('scroll',scrollB);});
 
                 },throttleSpeed);
 		
-                scrollB=_.throttle(function(ev) { 
+                scrollB=_.debounce(function(ev) { 
                         console.log("SCROLL B");
-                                $("#alnB_names").scrollTop($("#alnB_seqs").scrollTop());
 			
                                 central=alnBCharacterAt[focusSeq][Math.round($("#alnB_seqs").scrollLeft()/charWidth)];
                                 clickChar();
@@ -437,6 +440,8 @@ function vis(){
                                 $("#alnA_seqs").off('scroll');
                                 $("#alnA_seqs").scrollLeft(alnAPositionOf[focusSeq][central]*charWidth);
                                 $("#alnA_seqs").scrollTop($("#alnB_seqs").scrollTop());
+                                $("#alnA_names").scrollTop($("#alnB_seqs").scrollTop());
+                                $("#alnB_names").scrollTop($("#alnB_seqs").scrollTop());
                                 redisplaySparklines();
                                 _.defer(function(){ $("#alnA_seqs").on('scroll',scrollA);});
 		},throttleSpeed);
