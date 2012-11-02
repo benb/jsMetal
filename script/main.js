@@ -60,7 +60,7 @@ function getHandleFileSelect(target){
                 handleFileSelect(target,e);
         }
         function handleFileSelect(target,e){
-                console.log("HANDLING FILE");
+                //console.log("HANDLING FILE");
                 e = e.originalEvent || e;
                 var file = e.target.files[0];
                 console.log(e);
@@ -426,7 +426,7 @@ function vis(){
                 var throttleSpeed=200;
 	
                 scrollA=_.debounce(function(ev){
-                        console.log("SCROLL A");
+                    //    console.log("SCROLL A");
                                 var range = visibleRange($("#alnA_seqs"),alnA[0].content.length);
 
                                 central=alnACharacterAt[focusSeq][Math.round($("#alnA_seqs").scrollLeft()/charWidth)];
@@ -443,7 +443,7 @@ function vis(){
                 },throttleSpeed);
 		
                 scrollB=_.debounce(function(ev) { 
-                        console.log("SCROLL B");
+                     //   console.log("SCROLL B");
 			
                                 central=alnBCharacterAt[focusSeq][Math.round($("#alnB_seqs").scrollLeft()/charWidth)];
                                 clickChar();
@@ -463,7 +463,7 @@ function vis(){
                 var distVisHandler = function () {
 			$("#distanceVisualizationType option:selected").each(function () {
 				var visType=$(this).val();
-                                console.log(visType);
+                                //console.log(visType);
                                 $("#seqColour").attr('href','css/'+visType+'.css');
 				
 				});
@@ -482,7 +482,7 @@ function bindings(){
 	$("#homologyType").change(function () {
 			
 			homType=parseInt($(this).val());
-                        console.log("homType " + homType);
+                        //console.log("homType " + homType);
                         updateCurrentHomType();
 			
                         /*
