@@ -85,16 +85,6 @@ function applyCSS(alignment,cssData){
         return alignment;
 }
 
-function colouredSequenceMaker(distances,alignment,alignmentID,numHom){ 
-        var aln = sequenceMaker(alignment,alignmentID);
-        var colourFs = colouredCSSMaker(distances,alignment,alignmentID,numHom);
-        //var colourFs = [1,2,3,4]; 
-        return [aln,colourFs];
-
-}
-
-
-
 function makeVisualiser($alnASequences,$alnBSequences,alnA,alnB){
 	
 	//the whole visualiser <div/>
@@ -118,10 +108,12 @@ function makeVisualiser($alnASequences,$alnBSequences,alnA,alnB){
 	
 	$alnA_NamesDiv.append($("<div>&nbsp;</div>").css("height", scrollbarWidth()));
 	$alnB_NamesDiv.append($("<div>&nbsp;</div>").css("height", scrollbarWidth()));
+        $alnADistPlot=$("<div class='aln_y'/>").attr("id","alnA_Y");
+        $alnBDistPlot=$("<div class='aln_y'/>").attr("id","alnB_Y");
 	
 	//scrollGroup <div/>s serve to allow syncronized vertical scrolling
-	var $alnA_scrollGroup=$("<div/>").append($alnA_NamesDiv,$alnASequences).attr("id","alnA_scroll").addClass("scrollbox");
-	var $alnB_scrollGroup=$("<div/>").append($alnB_NamesDiv,$alnBSequences).attr("id","alnB_scroll").addClass("scrollbox");
+	var $alnA_scrollGroup=$("<div/>").append($alnA_NamesDiv,$alnADistPlot,$alnASequences).attr("id","alnA_scroll").addClass("scrollbox");
+	var $alnB_scrollGroup=$("<div/>").append($alnB_NamesDiv,$alnBDistPlot,$alnBSequences).attr("id","alnB_scroll").addClass("scrollbox");
         var $between1=$("<button class='k-button' id='distanceToggle' />");
         $between1.css("height","30px").css("font-size","14px").css("margin-top","7px").css("float","left");
         var $between2=$("<span />").attr("id","alnA_sparkline").css("height","40px").css("width",$alnASequences.width()).css("float","right").css("padding-top","5px");
@@ -137,32 +129,6 @@ function makeVisualiser($alnASequences,$alnBSequences,alnA,alnB){
 	return $visualiserDiv;
 	
 }
-/*
-function makeOutput(distances,homType,alnA){
-	var $outputDiv=$("<div/>").attr("id","output");
-	
-	if(G.visualize){
-		var $charDistP=$("<p/>").append("Distance for focused character :");
-		var $charDistValue=$("<span/>").attr("id","charDist").css("font-weight","bold");
-		$charDistP.append($charDistValue);
-		$outputDiv.append($charDistP);
-	}
-	
-	var $alnDistP=$("<p/>").append("Alignment distance: ");
-	var roundedAlnDistance=Math.round((distances.alignment[homType]*1000000))/1000000;
-	var $alnDistValue=$("<span/>").attr("id","alnDist").text(roundedAlnDistance);
-	$alnDistP.append($alnDistValue);
-	for(var i=0;i<G.sequenceNumber;i++){
-		var roundedSeqDistance=Math.round((distances.sequence[homType][i]*1000000))/1000000;
-		var $seqDistP = $("<p/>").append("Distance for sequence "+alnA[i].name+": ");
-		var $seqDistValue=$("<span/>").attr("id",alnA[i].name+"_dist").text(roundedSeqDistance);
-		$seqDistP.append($seqDistValue);
-		$outputDiv.append($seqDistP);
-	}
-	$outputDiv.append($alnDistP);
-	return $outputDiv;
-}*/
-////////////////////////////////////
 function makeOutput(distances,homType,alnA){
 	var $outputTable1=$("<div/>").attr("id","output");
 	var $outputTable2=$("<table/>").attr("id","output");
@@ -250,11 +216,8 @@ function makeRawColumnDist(distances,homType,alnA){
         
         return $colDist;
 }
-function makeVisualColumnDist(distance,homType,alnA,alnAView,target,width){
-        var colDist = makeRawColumnDist(distance,homType,alnA);
-        applyColumnDist(colDist,alnAView,target,width);
-}
-function visibleRange(alnAView,columns){
+function visibleRange(alnAView,columns,rows){
+
         var left = alnAView.scrollLeft();
         var totalWidth = alnAView[0].scrollWidth;
         var visibleWidth = alnAView.width();
@@ -265,7 +228,20 @@ function visibleRange(alnAView,columns){
         fractionEnd=fractionEnd-padChars;
         if (fractionEnd>columns){fractionEnd=columns};
         if (fractionStart<0){fractionStart=0};
-        return [fractionStart,Math.floor((fractionStart+fractionEnd)/2),fractionEnd];
+
+        if(rows){
+        var topS = alnAView.scrollTop();
+        var totalHeight = alnAView[0].scrollHeight;
+        var visibleHeight = alnAView.height();
+        var fractionTop=Math.floor((topS/totalHeight)*rows);
+        var fractionBottom = Math.floor((topS+visibleHeight)/totalHeight*rows);
+
+
+        return [fractionStart,Math.floor((fractionStart+fractionEnd)/2),fractionEnd,
+                fractionTop,Math.floor((fractionTop+fractionBottom)/2),fractionBottom ];
+        }else {
+                return [fractionStart,Math.floor((fractionStart+fractionEnd)/2),fractionEnd];
+        }
 }
 function applyColumnDist(colDist,density,alnAView,target,width,invert){
         var range = visibleRange(alnAView,colDist.length)
@@ -320,14 +296,6 @@ function applyColumnDist(colDist,density,alnAView,target,width,invert){
 
 
 	
-$(window).resize(function() {
-	//google chrome gets tired and emotional if we don't tell it to calculate divWidth here
-	divWidth= $("#alnA_Seqs").width();
-});
-
-
-
-
 function getPositions(alignment){
 	
 	var positionOf = [];
@@ -382,30 +350,6 @@ function charPadding(num) {
 	var $paddingSpan = soFar.join("");
 	return $paddingSpan;
 }
-
-function transparentAminoCSS(charDist,type){
-	var transparentCSS=[];
-	for(var i=0;i<G.sequenceNumber;i++){
-		transparentCSS[i]=[];
-                console.log("transparentAminoCSS " + type);
-		for(var k=0;k<G.origLengths[i];k++){
-			if(type==1){
-				opacity=charDist[i][k];				
-			}else if(type==2){
-				opacity=1;
-			}else{
-				opacity=1-charDist[i][k];
-			}
-                        console.log($("#alnA_"+i+"_"+k).css("background-color"));
-			transparentCSS[i].push($("#alnA_"+i+"_"+k).css("background-color").replace("rgb","rgba").replace(")",", "+opacity+")"));
-                        console.log(transparentCSS[i][k])
-			}
-		}
-	
-	return transparentCSS;
-}
-
-
 
 function 	changeDistanceVisualization(newCSS){
 	if(!newCSS){

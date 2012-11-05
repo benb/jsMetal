@@ -281,6 +281,7 @@ function process2(){
                                         distances.character[myDist]=raw.character;
                                         distances.alignment[myDist]=raw.alignment;
                                         distances.sequence[myDist]=raw.sequence;
+                                        console.log("WRITTEN " + myDist);
                                         deferred.resolve();
                                 }
                         worker.postMessage(pack({A:alnA,B:alnB,dist:myDist}));
@@ -292,7 +293,7 @@ function process2(){
                        });
                 alnAF[0] = sequenceMaker(alnA,"alnA",padChars);                                                                                                  
                 alnBF[0] = sequenceMaker(alnB,"alnB",padChars);                                                                                                  
-                def[homType].done(process3);
+                def[homType].done(function(){_.defer(process3)});
         }else{
                 distanceFs=calcDistances(alnA,alnB);
                 _.each([0,1,2,3],function(i){
@@ -470,9 +471,6 @@ function bindings(){
                 }
 	
                 sparkLineClickA = function(event){
-                        console.log("GOT CLICK");
-                        console.log(event.sparklines);
-                        console.log(event.sparklines[0].getCurrentRegionFields());
                         central = event.sparklines[0].getCurrentRegionFields().offset;
                         central = central-cGapsA[focusSeq][central];
                         clickChar();
@@ -484,6 +482,19 @@ function bindings(){
                         clickChar();
                         focusCentral();
                 }
+                verticalClick=function(event){
+                        var posY = $(this).position().top;
+                        var posY=event.pageY-posY;
+                        console.log("GOT CLICK " + posY);
+                        var height = $(this).height();
+                        var fullheight = $("#alnA_seqs")[0].scrollHeight;
+                        var sTop = Math.max(0,posY/height-(height/fullheight/2))*fullheight;
+                        
+                        console.log("scrollTop " + posY + " " + fullheight + " " + height + " " + (height / 2) + " " + sTop);
+                        $("#alnA_seqs").scrollTop(sTop);
+                }
+                $("#alnA_Y").on("click",verticalClick);
+                $("#alnB_Y").on("click",verticalClick);
 
                 $("#alnB_sparkline").bind('sparklineClick',sparkLineClickB);
                 $("#alnA_sparkline").bind('sparklineClick',sparkLineClickA);
@@ -513,7 +524,6 @@ function bindings(){
 
                 scrollA=_.debounce(function(ev){
                     //    console.log("SCROLL A");
-                                var range = visibleRange(alnA_seqs,alnA[0].content.length);
 
                                 central=alnACharacterAt[focusSeq][Math.round(alnA_seqs.scrollLeft()/charWidth)];
                                 clickChar();
@@ -630,6 +640,8 @@ function bindings(){
                 alnA_names.css("height",targetHeight);
                 alnB_seqs.css("height",targetHeight);
                 alnB_names.css("height",targetHeight);
+                $("#alnA_Y").css("height",targetHeight);
+                $("#alnB_Y").css("height",targetHeight);
                 redisplaySparklines();
         };
 
@@ -678,12 +690,32 @@ function cumulativeGaps(aln){
 function recalculateSparklines(){
                 colDistA = makeRawColumnDist(distances,homType,alnA);
                 colDistB = makeRawColumnDist(distances,homType,alnB);
-                redisplaySparklines = _.throttle(doRedisplaySparklines,1000);
 }
+redisplaySparklines = _.throttle(doRedisplaySparklines,1000);
 function doRedisplaySparklines(){
         console.log("distance " + sparklineDistanceType);
-                applyColumnDist(colDistA,alnADensity,$("#alnA_seqs"),$("#alnA_sparkline"),$("#alnA_seqs").width(),sparklineDistanceType);
-                applyColumnDist(colDistB,alnBDensity,$("#alnB_seqs"),$("#alnB_sparkline"),$("#alnB_seqs").width(),sparklineDistanceType);
+        applyColumnDist(colDistA,alnADensity,$("#alnA_seqs"),$("#alnA_sparkline"),$("#alnA_seqs").width(),sparklineDistanceType);
+        console.log("foo");
+        applyColumnDist(colDistB,alnBDensity,$("#alnB_seqs"),$("#alnB_sparkline"),$("#alnB_seqs").width(),sparklineDistanceType);
+        console.log("foo");
+
+        var range = visibleRange($("#alnA_seqs"),alnA[0].content.length,alnA.length);                                                              
+        console.log(range);
+        var alnAY=$("#alnA_Y");
+        var alnBY=$("#alnB_Y");
+        alnAY.empty();
+        alnBY.empty();
+        for (var i=0; i < distances.sequence[homType].length; i++){
+                var h = 100/distances.sequence[homType].length + "%";
+                if (i>=range[3] && i<=range[5]){
+                        alnAY.append($("<div class='bar-selected'/>").css("width",distances.sequence[homType][i]*100+"%").css("height",h));
+                        alnBY.append($("<div class='bar-selected'/>").css("width",distances.sequence[homType][i]*100+"%").css("height",h));
+                }else {
+                        alnAY.append($("<div class='bar'/>").css("width",distances.sequence[homType][i]*100+"%").css("height",h));
+                        alnBY.append($("<div class='bar'/>").css("width",distances.sequence[homType][i]*100+"%").css("height",h));
+                }
+
+        }
 }
 
 
