@@ -17,8 +17,6 @@ var padChars = 20;
 var charWidth;
 var colDistA;
 var colDistB;
-var sparkLineClickA;
-var sparkLineClickB;
 var homType=2;
 var sparklineDistanceType=true;
 var distances={};
@@ -292,6 +290,8 @@ function process2(){
                 _.each(distSet,function(x){
                         def[x].done(function(){lock[x]=false;postF(x-1)});
                        });
+                alnAF[0] = sequenceMaker(alnA,"alnA",padChars);                                                                                                  
+                alnBF[0] = sequenceMaker(alnB,"alnB",padChars);                                                                                                  
                 def[homType].done(process3);
         }else{
                 distanceFs=calcDistances(alnA,alnB);
@@ -302,6 +302,8 @@ function process2(){
                         distances.sequence[i]=raw.sequence;
 
                 });
+                alnAF[0] = sequenceMaker(alnA,"alnA",padChars);                                                                                                  
+                alnBF[0] = sequenceMaker(alnB,"alnB",padChars);                                                                                                  
                 _.defer(process3);
         }
         //distances=getDistances(homSetsA,homSetsB,G.doEvo,gapsHere);
@@ -323,11 +325,17 @@ function process3(){
         _.defer(updateCurrentHomType);
         _.defer(vis);
         
-        //dateStamp("end process3()")
+        dateStamp("end process3()")
 }
+var prog=0;
+        var progress=function(){
+                dateStamp(prog++);
+        }
+
 function vis(){
         console.log("VIS");
-	if(G.visualize){
+        if(G.visualize){
+                progress();
                 if (G.doEvo){
                         $("#evol").removeAttr("disabled");
                         $("#evol").html("evol (recommended)");
@@ -336,66 +344,102 @@ function vis(){
                 }else {
                         $("#evol").remove();
                 }
+                progress();
                 $("#homologyType").kendoDropDownList({autoBind:true});
+                progress();
 
                 $("#homologyType").data("kendoDropDownList").toggle();
+                progress();
                 $("#homologyType").data("kendoDropDownList").toggle();
+                progress();
 		$("#distanceVisualizationPanel").css("display","inline");
+                progress();
 		cssCache=[[],[],[],[]];
 		
 		//create coloured sequences for all homology types
-                alnAF[0] = sequenceMaker(alnA,"alnA");                                                                                                  
-                alnBF[0] = sequenceMaker(alnB,"alnB");                                                                                                  
                 alnAF[1] = _.map(homTypes,function(x){return _.memoize(function(){return colouredCSSMaker(distances.character[x],alnA,"alnA")});});                                                                         
+                progress();
                 alnBF[1] = _.map(homTypes,function(x){return _.memoize(function(){return colouredCSSMaker(distances.character[x],alnB,"alnB")});});                                                                         
+                progress();
                 var $alnASeqDiv = alnAF[0];
+                progress();
                 var $alnBSeqDiv = alnBF[0];
+                progress();
 
                 
 		
 		
 		var visType=parseInt($('#distanceVisualizationType option:selected').val());
 		
+                progress();
 		//create and append visualiser with initial default homology type
 		var $visualiser = makeVisualiser($alnASeqDiv,$alnBSeqDiv,alnA,alnB);
+                progress();
 		
 		$("body").append($visualiser);
+                progress();
 
-                $("#distanceToggle").click(function(){
-                        console.log("CLICK");
-                        sparklineDistanceType=!sparklineDistanceType;
-                        if (sparklineDistanceType){
-                                $(this).html("similarity");
-                        }else{
-                                $(this).html("distance");
-                        }
-                        doRedisplaySparklines();
-                });
+               progress();
                 if (sparklineDistanceType){
                         $("#distanceToggle").html("similarity");
                 }else {
                         $("#distanceToggle").html("distance");
                 }
+                progress();
                 applyCSS(alnAF[0],alnAF[1][homType]());
+                progress();
                 applyCSS(alnBF[0],alnBF[1][homType]());
+                progress();
 
 		//get width of sequence display and characters
-		var divWidth = $("#alnA_seqs").outerWidth();
+	//	var divWidth = $("#alnA_seqs").outerWidth();
+                progress();
 		charWidth =  getCharWidth();
+                progress();
 		
 		//add padding to each end of sequences such that both first and last characters can be displayed in centre of  visualiser
-		var padding = charPadding(padChars);
-		for(var i=0;i<G.sequenceNumber;i++){
-			$(".seq_"+i).prepend(padding);
-			$(".seq_"+i).append(padding);
-		}
+		
+                progress();
 
 		
 		//make initial scroll position feel natural by showing start of alignment on the left of the display
-		var startScroll=(parseInt(0.5*divWidth/charWidth))*charWidth;
+		var startScroll=250;
+                progress();
 		$("#alnA_seqs").scrollLeft(startScroll);
+                progress();
 		$("#alnB_seqs").scrollLeft(startScroll);
+                progress();
                 		
+                progress();
+                recalculateSparklines();
+                progress();
+                redisplaySparklines();
+                progress();
+
+                recalculateMinilines();
+                progress();
+	}
+        _.defer(function(){dialogBox.close(); });
+        _.defer(bindings);
+        dateStamp("end vis()")
+}
+function bindings(){
+                var clickChar=function(){
+                        //this sets the focused character to [focusSeq][central]
+                        $("#alnA"+"_"+oldFocusSeq+"_"+oldCentral).removeClass("centralChar");
+                        $("#alnB"+"_"+oldFocusSeq+"_"+oldCentral).removeClass("centralChar");
+
+                        oldFocusSeq=focusSeq;
+
+
+                        oldCentral=central;
+
+                        $("#charDist").text(Math.round(distances.character[homType][focusSeq][central]*1000)/1000);
+                        $("#alnA"+"_"+focusSeq+"_"+central).addClass("centralChar");
+                        $("#alnB"+"_"+focusSeq+"_"+central).addClass("centralChar");
+                }
+
+
 		// alnXPositionOf array indicates the position j of character number i in the true sequence in alignment X
 		// alnXCharacterAt array indicates what character i of the true sequence is at position number j in alignment X
 		// yes, each pair of arrays is complementary
@@ -415,9 +459,13 @@ function vis(){
 		var oldFocusSeq=focusSeq;
                 var cGapsA=cumulativeGaps(alnA);
                 var cGapsB=cumulativeGaps(alnB);
+                alnA_seqs=$("#alnA_seqs");
+                alnB_seqs=$("#alnB_seqs");
+                alnA_names=$("#alnA_names");
+                alnB_names=$("#alnB_names");
                 var focusCentral=function(){
-                        $("#alnA_seqs").scrollLeft(alnAPositionOf[focusSeq][central]*charWidth);
-                        $("#alnB_seqs").scrollLeft(alnBPositionOf[focusSeq][central]*charWidth);
+                        alnA_seqs.scrollLeft(alnAPositionOf[focusSeq][central]*charWidth);
+                        alnB_seqs.scrollLeft(alnBPositionOf[focusSeq][central]*charWidth);
                         redisplaySparklines();
                 }
 	
@@ -436,74 +484,69 @@ function vis(){
                         clickChar();
                         focusCentral();
                 }
-                recalculateSparklines();
-                redisplaySparklines();
 
-                recalculateMinilines();
                 $("#alnB_sparkline").bind('sparklineClick',sparkLineClickB);
                 $("#alnA_sparkline").bind('sparklineClick',sparkLineClickA);
-                var clickChar=function(){
-                        //this sets the focused character to [focusSeq][central]
-                        $("#alnA"+"_"+oldFocusSeq+"_"+oldCentral).removeClass("centralChar");
-                        $("#alnB"+"_"+oldFocusSeq+"_"+oldCentral).removeClass("centralChar");
-
-                        oldFocusSeq=focusSeq;
-
-
-                        oldCentral=central;
-
-                        $("#charDist").text(Math.round(distances.character[homType][focusSeq][central]*1000)/1000);
-                        $("#alnA"+"_"+focusSeq+"_"+central).addClass("centralChar");
-                        $("#alnB"+"_"+focusSeq+"_"+central).addClass("centralChar");
-                }
-                $("#alnA_seqs").bind('click', function(event) {
+                alnA_seqs.bind('click', function(event) {
 			focusSeq = $(event.target).closest("div").index();
 			central = alnACharacterAt[focusSeq][$(event.target).closest("span").index() - padChars];
                         clickChar();
 		});
 	
-		$("#alnB_seqs").bind('click', function(event) {
+		alnB_seqs.bind('click', function(event) {
 			focusSeq = $(event.target).closest("div").index();
 			central = alnBCharacterAt[focusSeq][$(event.target).closest("span").index() - padChars];
                         clickChar();
 		});
-                var throttleSpeed=200;
-	
+                var throttleSpeed=100;
+                $("#distanceToggle").click(function(){
+                        console.log("CLICK");
+                        sparklineDistanceType=!sparklineDistanceType;
+                        if (sparklineDistanceType){
+                                $(this).html("similarity");
+                        }else{
+                                $(this).html("distance");
+                        }
+                        doRedisplaySparklines();
+                });
+ 
+
                 scrollA=_.debounce(function(ev){
                     //    console.log("SCROLL A");
-                                var range = visibleRange($("#alnA_seqs"),alnA[0].content.length);
+                                var range = visibleRange(alnA_seqs,alnA[0].content.length);
 
-                                central=alnACharacterAt[focusSeq][Math.round($("#alnA_seqs").scrollLeft()/charWidth)];
+                                central=alnACharacterAt[focusSeq][Math.round(alnA_seqs.scrollLeft()/charWidth)];
                                 clickChar();
 		       
-                                $("#alnB_seqs").off('scroll');
-                                $("#alnB_seqs").scrollLeft(alnBPositionOf[focusSeq][central]*charWidth);
-                                $("#alnB_seqs").scrollTop($("#alnA_seqs").scrollTop());
-                                $("#alnA_names").scrollTop($("#alnA_seqs").scrollTop());
-                                $("#alnB_names").scrollTop($("#alnA_seqs").scrollTop());
+                                alnB_seqs.off('scroll');
+                                alnB_seqs.scrollLeft(alnBPositionOf[focusSeq][central]*charWidth);
+                                alnB_seqs.scrollTop(alnA_seqs.scrollTop());
+                                alnA_names.scrollTop(alnA_seqs.scrollTop());
+                                alnB_names.scrollTop(alnA_seqs.scrollTop());
                                 redisplaySparklines();
-                                _.defer(function(){ $("#alnB_seqs").on('scroll',scrollB);});
+                                _.defer(function(){ alnB_seqs.on('scroll',scrollB);});
 
                 },throttleSpeed);
 		
                 scrollB=_.debounce(function(ev) { 
                      //   console.log("SCROLL B");
 			
-                                central=alnBCharacterAt[focusSeq][Math.round($("#alnB_seqs").scrollLeft()/charWidth)];
+                                central=alnBCharacterAt[focusSeq][Math.round(alnB_seqs.scrollLeft()/charWidth)];
                                 clickChar();
 			
-                                $("#alnA_seqs").off('scroll');
-                                $("#alnA_seqs").scrollLeft(alnAPositionOf[focusSeq][central]*charWidth);
-                                $("#alnA_seqs").scrollTop($("#alnB_seqs").scrollTop());
-                                $("#alnA_names").scrollTop($("#alnB_seqs").scrollTop());
-                                $("#alnB_names").scrollTop($("#alnB_seqs").scrollTop());
+                                alnA_seqs.off('scroll');
+                                alnA_seqs.scrollLeft(alnAPositionOf[focusSeq][central]*charWidth);
+                                alnA_seqs.scrollTop(alnB_seqs.scrollTop());
+                                alnA_names.scrollTop(alnB_seqs.scrollTop());
+                                alnB_names.scrollTop(alnB_seqs.scrollTop());
                                 redisplaySparklines();
-                                _.defer(function(){ $("#alnA_seqs").on('scroll',scrollA);});
+                                _.defer(function(){ alnA_seqs.on('scroll',scrollA);});
 		},throttleSpeed);
 	
-		$("#alnA_seqs").on('scroll',scrollA);
-		$("#alnB_seqs").on('scroll',scrollB);
+		alnA_seqs.on('scroll',scrollA);
+		alnB_seqs.on('scroll',scrollB);
 		
+                progress();
                 var distVisHandler = function () {
 			$("#distanceVisualizationType option:selected").each(function () {
 				var visType=$(this).val();
@@ -514,13 +557,7 @@ function vis(){
 			};
                 distVisHandler();
 		$("#distanceVisualizationType").change(distVisHandler);
-
-	}
-        _.defer(function(){dialogBox.close(); });
-        _.defer(bindings);
-        dateStamp("end vis()")
-}
-function bindings(){
+                progress();
 
 	$("#homologyType").change(function () {
 			
@@ -582,17 +619,17 @@ function bindings(){
                 var otherHeight=$("#visualiser").offset().top 
                 //padding on visualiser
                 otherHeight+=$("#visualiser").outerHeight(true);                                                                                                
-                otherHeight-=$("#alnA_seqs").outerHeight(true);                                                                                                
-                otherHeight-=$("#alnB_seqs").outerHeight(true);                                                                                                
+                otherHeight-=alnA_seqs.outerHeight(true);                                                                                                
+                otherHeight-=alnB_seqs.outerHeight(true);                                                                                                
                
                 //output at bottom
                 otherHeight+=$("#output table").outerHeight(true);
 
                 var targetHeight = (height-otherHeight)/2;
-                $("#alnA_seqs").css("height",targetHeight);
-                $("#alnA_names").css("height",targetHeight);
-                $("#alnB_seqs").css("height",targetHeight);
-                $("#alnB_names").css("height",targetHeight);
+                alnA_seqs.css("height",targetHeight);
+                alnA_names.css("height",targetHeight);
+                alnB_seqs.css("height",targetHeight);
+                alnB_names.css("height",targetHeight);
                 redisplaySparklines();
         };
 
@@ -652,11 +689,12 @@ function doRedisplaySparklines(){
 
 function recalculateMinilines(){
        var t1 = new Date();
-       for (var i=0; i < distances.sequence[homType].length; i++){
-               var target = $(".miniline_"+i);
+       var tags=$("div#visualiser").find("div.miniline").each(function(x,elem){
+               var i = elem.id.replace("miniline_","");
+               var target=$(elem);
                target.css("width","30%");
                target.html("<img src='png/"+Math.floor(distances.sequence[homType][i]*100)+".png' title='"+distances.sequence[homType][i]+"' height='10px' style='max-width:100%'/>")
-       }
+       });
        var t2 = new Date();
        console.log(t2-t1);
 }

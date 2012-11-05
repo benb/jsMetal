@@ -5,13 +5,14 @@
 
 function sequenceMaker(alignment,alignmentID){
 	
-		
+
+        var padding = charPadding(padChars);                                                                                                     
 		$sequenceDiv = $("<div/>").attr("id",alignmentID+"_seqs").addClass("seqs");
 		
 		//array of jquery <div/>s for each sequence
 		for(var i=0;i<G.sequenceNumber;i++){
 	
-			$colouredSeqDivs = $("<div/>").addClass("seq_"+i);
+			$colouredSeqDivs = $("<div/>").addClass("seq_"+i).append(padding);
 					
 			//index for non-gap characters
 			var k=0;
@@ -28,7 +29,7 @@ function sequenceMaker(alignment,alignmentID){
 				$colouredSeqDivs.append($character);
 			}
 		
-			$sequenceDiv.append($colouredSeqDivs);
+			$sequenceDiv.append($colouredSeqDivs.append(padding));
 		}
 	
 		
@@ -106,11 +107,11 @@ function makeVisualiser($alnASequences,$alnBSequences,alnA,alnB){
 	for(i=0;i< G.sequenceNumber;i++){
 		//populate name
                 if (i%2==0){
-                        $alnA_NamesDiv.append("<div class='row0'><div class='name' title='"+alnA[i].name+"'>"+alnA[i].name+ "</div><div class='miniline_"+i+ "'></div></div>");
-                        $alnB_NamesDiv.append("<div class='row0'><div class='name' title='"+alnB[i].name+"'>"+alnB[i].name+ "</div><div class='miniline_"+i+ "'></div></div>");
+                        $alnA_NamesDiv.append("<div class='row0'><div class='name' title='"+alnA[i].name+"'>"+alnA[i].name+ "</div><div class='miniline' id='miniline_"+i+ "'></div></div>");
+                        $alnB_NamesDiv.append("<div class='row0'><div class='name' title='"+alnB[i].name+"'>"+alnB[i].name+ "</div><div class='miniline' id='miniline_"+i+ "'></div></div>");
                 }else {
-                        $alnA_NamesDiv.append("<div class='row1'><div class='name' title='"+alnA[i].name+"'>"+alnA[i].name+ "</div><div class='miniline_"+i+ "'></div></div>");
-                        $alnB_NamesDiv.append("<div class='row1'><div class='name' title='"+alnB[i].name+"'>"+alnB[i].name+ "</div><div class='miniline_"+i+ "'></div></div>");
+                        $alnA_NamesDiv.append("<div class='row1'><div class='name' title='"+alnA[i].name+"'>"+alnA[i].name+ "</div><div class='miniline' id='miniline_"+i+ "'></div></div>");
+                        $alnB_NamesDiv.append("<div class='row1'><div class='name' title='"+alnB[i].name+"'>"+alnB[i].name+ "</div><div class='miniline' id='miniline_"+i+ "'></div></div>");
                 }
 	}
 
