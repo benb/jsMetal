@@ -122,7 +122,7 @@ function makeVisualiser($alnASequences,$alnBSequences,alnA,alnB){
 	var $alnA_scrollGroup=$("<div/>").append($alnA_NamesDiv,$alnASequences).attr("id","alnA_scroll").addClass("scrollbox");
 	var $alnB_scrollGroup=$("<div/>").append($alnB_NamesDiv,$alnBSequences).attr("id","alnB_scroll").addClass("scrollbox");
         var $between1=$("<button class='k-button' id='distanceToggle' />");
-        $between1.css("height","30px").css("font-size","14px").css("margin-top","7px");
+        $between1.css("height","30px").css("font-size","14px").css("margin-top","7px").css("float","left");
         var $between2=$("<span />").attr("id","alnA_sparkline").css("height","40px").css("width",$alnASequences.width()).css("float","right").css("padding-top","5px");
         var $between = $("<div />").css("width","100%").css("overflow","hidden").css("display","block").append($between1).append($between2);
 
