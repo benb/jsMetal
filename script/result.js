@@ -36,11 +36,8 @@ function sequenceMaker(alignment,alignmentID){
 	return $sequenceDiv;
 }
 
-function colouredCSSMaker(charDist,alignment,alignmentID,numHom){
+function colouredCSSMaker(charDist,alignment,alignmentID){
 	var $sequenceDiv = [];
-	for(var homType = 0; homType<numHom;homType++){
-                var tmp=function(charDist,homType){
-                        var charDist = charDist[homType]
 		
 		var $sDiv = [];
 		
@@ -67,11 +64,6 @@ function colouredCSSMaker(charDist,alignment,alignmentID,numHom){
 			$sDiv.push($colourF[i]);
 		}
                 return $sDiv;
-                }
-	
-		$sequenceDiv[homType] = _.memoize(_.bind(tmp,{},charDist.character,homType));
-	}
-	return $sequenceDiv;
 }
 function applyCSS(alignment,cssData){
         var i=0; 
