@@ -20,6 +20,8 @@ var sparkLineClickA;
 var sparkLineClickB;
 var homType=2;
 var sparklineDistanceType=true;
+var distanceP=[];
+var distances={};
 
 
 //Global object (container for a few general features and options that should be easily available)
@@ -259,24 +261,54 @@ function doHomology(newick_string,aln,seqNum,end){
 function process2(){
         _.defer(function(){$("#dialogtext").html("Calculation of distances")});
         console.log("PROCESS 2");
+
+        distances.character=Array(3+G.doEvo);
+        distances.alignment=Array(3+G.doEvo);
+        distances.sequence=Array(3+G.doEvo);
+        if (useWorkers){
+                var distSet=[2,1,0];
+                if (G.doEvo){distSet.unshift(3)}
+                var def=_.map(distSet,function(x){return $.Deferred()});
+                var postF=function(myDist){
+                        var worker = new Worker("script/distances.js");
+                        var deferred=def[myDist];
+                        worker.onmessage= function (e) { 
+                                        var ans = unpack(e.data)
+                                        deferred.resolve(ans.distances) 
+                                }
+                        worker.postMessage(pack({A:alnA,B:alnB,dist:myDist}));
+                        console.log("Sent one!");
+                deferred.then(function(raw){
+                        console.log("OK!");
+                        distances.character[myDist]=raw.character;
+                        distances.alignment[myDist]=raw.alignment;
+                        distances.sequence[myDist]=raw.sequence;
+                        console.log(distances);
+                })
+                }
+                _.each(distSet,function(x){postF(x)});
+                _.each(distSet,function(x){
+                        $.when(def[x]).done(function(){unlockHom(x)});
+                       });
+                $.when(def[homType]).done(process3);
+        }else{
                 distanceFs=calcDistances(alnA,alnB);
-                console.log(distanceFs.length);
-                distances={};
-                distances.character=[];
-                distances.alignment=[];
-                distances.sequence=[];
+                _.each([0,1,2,3],function(i){
+                        var raw = distanceFs[i]();
+                        distances.character[i]=raw.character;
+                        distances.alignment[i]=raw.alignment;
+                        distances.sequence[i]=raw.sequence;
+
+                });
                 _.defer(process3);
-		//distances=getDistances(homSetsA,homSetsB,G.doEvo,gapsHere);
-                dateStamp("end process2()")
+        }
+        //distances=getDistances(homSetsA,homSetsB,G.doEvo,gapsHere);
+}
+function unlockHom(x){
+        console.log("do Unlock");
 }
 function updateCurrentHomType(){
-        console.log(distanceFs);
-        console.log(distanceFs.length);
         console.log("UPDATE HOM");
-        var raw=distanceFs[homType]();
-        distances.character[homType]=raw.character;
-        distances.alignment[homType]=raw.alignment;
-        distances.sequence[homType]=raw.sequence;
 }
 function process3(){
 		
@@ -313,8 +345,8 @@ function vis(){
 		cssCache=[[],[],[],[]];
 		
 		//create coloured sequences for all homology types
-		var $alnASeqDivX = colouredSequenceMaker(distanceFs,alnA,"alnA");
-		var $alnBSeqDivX = colouredSequenceMaker(distanceFs,alnB,"alnB");
+		var $alnASeqDivX = colouredSequenceMaker(distances,alnA,"alnA",G.doEvo+3);
+		var $alnBSeqDivX = colouredSequenceMaker(distances,alnB,"alnB",G.doEvo+3);
                 alnAF = $alnASeqDivX;
                 alnBF = $alnBSeqDivX;
                 var $alnASeqDiv = alnAF[0];

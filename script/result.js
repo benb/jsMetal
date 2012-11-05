@@ -36,12 +36,11 @@ function sequenceMaker(alignment,alignmentID){
 	return $sequenceDiv;
 }
 
-function colouredCSSMaker(charDistF,alignment,alignmentID){
-	
+function colouredCSSMaker(charDist,alignment,alignmentID,numHom){
 	var $sequenceDiv = [];
-	for(var homType = 0; homType<charDistF.length;homType++){
-                var tmp=function(hT){
-                var charDist = charDistF[hT]().character;
+	for(var homType = 0; homType<numHom;homType++){
+                var tmp=function(charDist,homType){
+                        var charDist = charDist[homType]
 		
 		var $sDiv = [];
 		
@@ -70,7 +69,7 @@ function colouredCSSMaker(charDistF,alignment,alignmentID){
                 return $sDiv;
                 }
 	
-		$sequenceDiv[homType] = _.memoize(_.bind(tmp,{},homType));
+		$sequenceDiv[homType] = _.memoize(_.bind(tmp,{},charDist.character,homType));
 	}
 	return $sequenceDiv;
 }
@@ -93,9 +92,9 @@ function applyCSS(alignment,cssData){
         return alignment;
 }
 
-function colouredSequenceMaker(distanceFs,alignment,alignmentID){ 
+function colouredSequenceMaker(distances,alignment,alignmentID,numHom){ 
         var aln = sequenceMaker(alignment,alignmentID);
-        var colourFs = colouredCSSMaker(distanceFs,alignment,alignmentID);
+        var colourFs = colouredCSSMaker(distances,alignment,alignmentID,numHom);
         //var colourFs = [1,2,3,4]; 
         return [aln,colourFs];
 
