@@ -78,6 +78,7 @@ textarea.alnInput{
 	white-space:nowrap; 
 	font-family:'Inconsolata', 'Consolas', monospace;
 	width:99%;
+        white-space: pre;
 	resize: none; 
 }
 #input{
