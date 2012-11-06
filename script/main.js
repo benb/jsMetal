@@ -126,7 +126,7 @@ function example(i){
 function supports_web_workers() {
         return !!window.Worker;
 }
-var useWorkers=supports_web_workers();
+var useWorkers=false;//supports_web_workers();
 var START = new Date();
 
 function dateStamp(string){
@@ -256,6 +256,7 @@ function doHomology(newick_string,aln,seqNum,end){
                 if (aln[0].labeledContent[EVO]){
                         G.doEvo=1;
                         homType=3;
+                        homTypes.push(3);
                 }
                 end();
         }
@@ -291,8 +292,8 @@ function process2(){
                 _.each(distSet,function(x){
                         def[x].done(function(){lock[x]=false;postF(x-1)});
                        });
-                alnAF[0] = _.defer(sequenceMaker(alnA,"alnA",padChars));                                                                                                  
-                alnBF[0] = _.defer(sequenceMaker(alnB,"alnB",padChars));                                                                                                  
+                _.defer(function(){alnAF[0] = sequenceMaker(alnA,"alnA",padChars)});                                                                                                  
+                _.defer(function(){alnBF[0] = sequenceMaker(alnB,"alnB",padChars)});                                                                                                  
                 def[homType].done(function(){_.defer(process3)});
         }else{
                 distanceFs=calcDistances(alnA,alnB);
@@ -303,8 +304,9 @@ function process2(){
                         distances.sequence[i]=raw.sequence;
 
                 });
-                alnAF[0] = _.defer(sequenceMaker(alnA,"alnA",padChars));                                                                                                  
-                alnBF[0] = _.defer(sequenceMaker(alnB,"alnB",padChars));                                                                                                  
+                _.defer(function(){alnAF[0] = sequenceMaker(alnA,"alnA",padChars)});                                                                                                  
+                _.defer(function(){alnBF[0] = sequenceMaker(alnB,"alnB",padChars)});                                                                                                  
+                _.defer(function(){ console.log(alnAF[0])});
                 _.defer(process3);
         }
         //distances=getDistances(homSetsA,homSetsB,G.doEvo,gapsHere);
