@@ -291,8 +291,8 @@ function process2(){
                 _.each(distSet,function(x){
                         def[x].done(function(){lock[x]=false;postF(x-1)});
                        });
-                alnAF[0] = sequenceMaker(alnA,"alnA",padChars);                                                                                                  
-                alnBF[0] = sequenceMaker(alnB,"alnB",padChars);                                                                                                  
+                alnAF[0] = _.defer(sequenceMaker(alnA,"alnA",padChars));                                                                                                  
+                alnBF[0] = _.defer(sequenceMaker(alnB,"alnB",padChars));                                                                                                  
                 def[homType].done(function(){_.defer(process3)});
         }else{
                 distanceFs=calcDistances(alnA,alnB);
@@ -303,8 +303,8 @@ function process2(){
                         distances.sequence[i]=raw.sequence;
 
                 });
-                alnAF[0] = sequenceMaker(alnA,"alnA",padChars);                                                                                                  
-                alnBF[0] = sequenceMaker(alnB,"alnB",padChars);                                                                                                  
+                alnAF[0] = _.defer(sequenceMaker(alnA,"alnA",padChars));                                                                                                  
+                alnBF[0] = _.defer(sequenceMaker(alnB,"alnB",padChars));                                                                                                  
                 _.defer(process3);
         }
         //distances=getDistances(homSetsA,homSetsB,G.doEvo,gapsHere);
@@ -483,14 +483,14 @@ function bindings(){
                         focusCentral();
                 }
                 verticalClick=function(event){
-                        var posY = $(this).position().top;
+                        var posY = $(this).offset().top;
                         var posY=event.pageY-posY;
                         console.log("GOT CLICK " + posY);
-                        var height = $(this).height();
+                        var height = $("#alnA_seqs").height();
                         var fullheight = $("#alnA_seqs")[0].scrollHeight;
                         var sTop = Math.max(0,posY/height-(height/fullheight/2))*fullheight;
                         
-                        console.log("scrollTop " + posY + " " + fullheight + " " + height + " " + (height / 2) + " " + sTop);
+                        console.log("scrollTop " + $(this).offset().top + " " + event.pageY + " " + posY + " " + fullheight + " " + height + " " + (height / 2) + " " + sTop);
                         $("#alnA_seqs").scrollTop(sTop);
                 }
                 $("#alnA_Y").on("click",verticalClick);
@@ -640,8 +640,14 @@ function bindings(){
                 alnA_names.css("height",targetHeight);
                 alnB_seqs.css("height",targetHeight);
                 alnB_names.css("height",targetHeight);
-                $("#alnA_Y").css("height",targetHeight);
-                $("#alnB_Y").css("height",targetHeight);
+                var height=$("#alnA_Y").height();
+                var scale=targetHeight/height;
+                var transform="scale(1,"+scale+")";
+                $("#alnA_Y").css("margin-top",((targetHeight-height)/2)+"px");
+                $("#alnA_Y").css("transform",transform);
+                $("#alnB_Y").css("margin-top",((targetHeight-height)/2)+"px");
+                $("#alnB_Y").css("transform",transform);
+//                $("#alnB_Y").css("transform",transform);
                 redisplaySparklines();
         };
 
@@ -705,8 +711,10 @@ function doRedisplaySparklines(){
         var alnBY=$("#alnB_Y");
         alnAY.empty();
         alnBY.empty();
+        alnAY.css("height",distances.sequence[homType].length+"px");
+        alnBY.css("height",distances.sequence[homType].length+"px");
         for (var i=0; i < distances.sequence[homType].length; i++){
-                var h = 100/distances.sequence[homType].length + "%";
+                var h = "1px";//100/distances.sequence[homType].length + "%";
                 if (i>=range[3] && i<=range[5]){
                         alnAY.append($("<div class='bar-selected'/>").css("width",distances.sequence[homType][i]*100+"%").css("height",h));
                         alnBY.append($("<div class='bar-selected'/>").css("width",distances.sequence[homType][i]*100+"%").css("height",h));
@@ -714,7 +722,6 @@ function doRedisplaySparklines(){
                         alnAY.append($("<div class='bar'/>").css("width",distances.sequence[homType][i]*100+"%").css("height",h));
                         alnBY.append($("<div class='bar'/>").css("width",distances.sequence[homType][i]*100+"%").css("height",h));
                 }
-
         }
 }
 
