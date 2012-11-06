@@ -667,14 +667,17 @@ function bindings(){
                 alnA_names.css("height",targetHeight);
                 alnB_seqs.css("height",targetHeight);
                 alnB_names.css("height",targetHeight);
+                /*
                 var height=$("#alnA_Y").height();
                 var scale=targetHeight/height;
                 var transform="scale(1,"+scale+")";
                 $("#alnA_Y").css("margin-top",((targetHeight-height)/2)+"px");
+                $("#alnA_Y").css("-webkit-transform-style","flat");
                 $("#alnA_Y").css("transform",transform);
                 $("#alnB_Y").css("margin-top",((targetHeight-height)/2)+"px");
+                $("#alnB_Y").css("-webkit-transform",transform);
                 $("#alnB_Y").css("transform",transform);
-//                $("#alnB_Y").css("transform",transform);
+                */
                 redisplaySparklines();
         };
 
@@ -731,6 +734,7 @@ function doRedisplaySparklines(){
         console.log("foo");
         applyColumnDist(colDistB,alnBDensity,$("#alnB_seqs"),$("#alnB_sparkline"),$("#alnB_seqs").width(),sparklineDistanceType);
         console.log("foo");
+        /*
 
         var range = visibleRange($("#alnA_seqs"),alnA[0].content.length,alnA.length);                                                              
         console.log(range);
@@ -750,6 +754,7 @@ function doRedisplaySparklines(){
                         alnBY.append($("<div class='bar'/>").css("width",distances.sequence[homType][i]*100+"%").css("height",h));
                 }
         }
+        */
 }
 
 
