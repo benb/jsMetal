@@ -285,10 +285,15 @@ function applyColumnDist(colDist,density,alnAView,target,width,invert){
                         if (highlight[i]!=null){highlight[i]=density[i]-highlight[i];}
                 }
         }
+        console.log(1);
         target.sparkline(normalD,{width:width,chartRangeMax:1.0,chartRangeMin:0.0,height:"30px",lineColor: '#444444',fillColor:'#444444',disableTooltips:true,disableHighlight:true,spotColor:false,minSpotColor:false,maxSpotColor:false});
+        console.log(2);
         target.sparkline(highD,{composite:true,width:width,chartRangeMax:1.0,chartRangeMin:0.0,height:"30px",lineColor: 'black',fillColor:'black',disableTooltips:true,disableHighlight:true,spotColor:false,minSpotColor:false,maxSpotColor:false});
-        target.sparkline(normal,{composite:true,chartRangeMax:1.0,chartRangeMin:0.0,height:"30px",chartRangeMax:1.0,width:width,fillColor:'#6c8be9',lineColor:false,disableTooltips:true,disableHighlight:true,spotColor:false,minSpotColor:false,maxSpotColor:false});
-        target.sparkline(highlight,{width:width,chartRangeMax:1.0,chartRangeMin:0.0,height:"30px",composite:true,lineColor: false, fillColor:'blue',disableTooltips:true,disableHighlight:true,spotColor:false,minSpotColor:false,maxSpotColor:false});
+        console.log(3);
+        target.sparkline(normal,{composite:true,chartRangeMax:1.0,chartRangeMin:0.0,height:"30px",chartRangeMax:1.0,width:width,fillColor:'#6c8be9',lineColor:'#6c8be9',disableTooltips:true,disableHighlight:true,spotColor:false,minSpotColor:false,maxSpotColor:false});
+        console.log(4);
+        target.sparkline(highlight,{width:width,chartRangeMax:1.0,chartRangeMin:0.0,height:"30px",composite:true,lineColor: 'blue', fillColor:'blue',disableTooltips:true,disableHighlight:true,spotColor:false,minSpotColor:false,maxSpotColor:false});
+        console.log(5);
 }
 
 
