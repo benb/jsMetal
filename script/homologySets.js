@@ -3,9 +3,13 @@ var SSP = 0;
 var SIM = 1;
 var POS = 2;
 var EVO = 3;
+try{
         importScripts('sequence.js');
         importScripts('newick_parser.js');
         importScripts('underscore-min.js');
+}
+catch(e){
+}
 
 
 //var pack = function(x){return msgpack.pack(x,true);}
