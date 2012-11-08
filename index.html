@@ -23,10 +23,9 @@
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-sparklines/2.0.0/jquery.sparkline.min.js"></script>
 
 
-<!--
-	<script type="text/javascript" src="webmetal.js"></script>
+	<script type="text/javascript" src="script/webmetal.js"></script>
 
--->
+<!--
         <script type="text/javascript" src="script/main.js"></script>                                                                                    
         <script type="text/javascript" src="script/distances.js"></script>                                                                               
         <script type="text/javascript" src="script/sequence.js"></script>                                                                                
@@ -35,6 +34,7 @@
         <script type="text/javascript" src="script/homologySets.js"></script>                                                                            
         <script type="text/javascript" src="script/newick_parser.js"></script>                                                                           
                                                                     
+-->
         <script>
                 $(document).ready(warn);
                 $(document).ready(function() {
@@ -80,6 +80,13 @@
 
                         });
                 });
+                function clearBoxes(){
+                        $("#newick").val("");
+                        $("#alignment1").val("");
+                        $("#alignment2").val("");
+                        $(".k-upload-files.k-reset").remove();
+                }
+
         </script>
         <script>
 
@@ -182,19 +189,26 @@
 	<textarea id="newick" class="alnInput" rows="2" cols="120" style="white-space:nowrap; font-type:monospace;" wrap="off">
 </textarea>
 	
+
 <button class="k-button" id="submit" onClick="process()">
         <span class="k-icon k-i-arrow-e"></span>
         Run</button>
 	
+<button class="k-button" id="submit" onClick="clearBoxes()">
+        <span class="k-icon k-i-cancel"></span>
+        Clear</button>
 <input name="doviz" id="doviz" type="checkbox" checked="yes">Visualise</input>
 	</div>
 	
 	<div id="instructions">
 	<h3>Instructions</h3>
-	<p>To compare two different alignments of the same set of sequences please paste both alignments in <a href="http://en.wikipedia.org/wiki/FASTA_format">FASTA format</a> into the corresponding input boxes.  Sequence identifiers must be consistent between alignments and ideally short to make visualization more convenient.</p>
-	<p>By default, this tool will calculate the distance between alignments using three distance metrics: <em>symmetrized sum-of-pairs</em>, <em>simple homology distance</em> and <em>homology distance with position-labelled gaps</em>. To also calculate <em>homology distance with tree-labelled gaps</em>, provide a <a href="http://en.wikipedia.org/wiki/Newick_format">Newick tree</a> containing all sequences in the alignments. 
-	<p>Running this tool on large alignments may cause the browser to become unresponsive for a few seconds while calculations are performed and the visualization is being generated. If this is an issue and visualization of results is not required, please uncheck the <em>visualise</em> option.</p>
+        <p>To compare two different alignments of the same set of sequences please <em>paste</em>, <em>upload</em> or <em>drag-and-drop</em> two alternative alignments of the same sequences in <a href="http://en.wikipedia.org/wiki/FASTA_format">FASTA format</a> into the corresponding input boxes.  Sequence identifiers must be consistent between alignments and ideally short to make visualization more convenient.</p>
+	<p>webMetAl will calculate the distance between alignments using three distance metrics: <em>symmetrized sum-of-pairs</em>, <em>simple homology distance</em> and <em>homology distance with position-labelled gaps</em>. To also calculate <em>homology distance with tree-labelled gaps</em>, provide a <a href="http://en.wikipedia.org/wiki/Newick_format">Newick tree</a> containing all sequences in the alignments. 
+	<p>As far as possible, webMetAl uses background processing to keep the browser responisve, but visualising very large alignments could cause the browser to become unresponsive for a few seconds while calculations are performed and the visualization is being generated. By unchecking the <em>visualise</em> option, webMetAl can be used to produce raw numerical results only.</p>
 	<p>The distance metrics calculated by this tool are described in <cite> Blackburne, B.P. and Whelan, S. Measuring the distance between multiple sequence alignments <em>Bioinformatics</em>, (2012) <strong>28</strong>(4): 495-502 (<a href="http://dx.doi.org/10.1093/bioinformatics/btr701">doi:10.1093/bioinformatics/btr701</a>)</cite>.</p>
+        <h3>Contact</h3>
+        <p>Please direct any questions or comments to <a href="http://www.manchester.ac.uk/research/simon.whelan/">Simon Whelan</a> and/or <a href="http://logspace.co.uk">Ben Blackburne</a>.
+
 	</div>
 	
 	
