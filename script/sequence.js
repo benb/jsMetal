@@ -74,6 +74,35 @@ function parser(alignmentString,alnName) {
 		sequenceLength = parsedSequences[i].content.length;
 		i++;
 	}
+        //remove all-gap columns
+        badcols=[];
+        for (i=0; i < parsedSequences[0].content.length; i++){
+                bad=true;
+                for (j=0; j< parsedSequences.length; j++){
+                        if (parsedSequences[j].content[i]!="-"){
+                                bad=false;
+                                continue;
+                        }
+                }
+                if (bad){
+                        badcols.unshift(i);
+                }
+        }
+        console.log(badcols);
+        if (badcols.length>0){
+                for (j=0; j< parsedSequences.length; j++){
+                        parsedSequences[j].content=parsedSequences[j].content.split("");
+                }
+                for (i=0; i < badcols.length; i++){
+                        for (j=0; j< parsedSequences.length; j++){
+                                var spliced=parsedSequences[j].content.splice(badcols[i],1);
+                                console.log(spliced);
+                        }
+                }
+                for (j=0; j< parsedSequences.length; j++){
+                        parsedSequences[j].content=parsedSequences[j].content.join("");
+                }
+        }
 	return parsedSequences;
 }
 
