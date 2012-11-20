@@ -278,7 +278,6 @@ function applyColumnDist(colDist,density,alnAView,target,width,invert){
         }
         target.css("width",width+"px");
         barWidth=Math.max((width / colDist.length),1);
-        console.log("INVERT? " + invert);
         if (invert){
                 for (var i=0; i < colDist.length; i++){
                         if (normal[i]!=null){normal[i]=density[i]-normal[i];}

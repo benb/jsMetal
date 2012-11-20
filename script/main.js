@@ -491,9 +491,9 @@ function bindings(){
                 alnB_seqs=$("#alnB_seqs");
                 alnA_names=$("#alnA_names");
                 alnB_names=$("#alnB_names");
-                var focusCentral=function(){
+                var focusCentral=function(hold){
                         alnA_seqs.scrollLeft(alnAPositionOf[focusSeq][central]*charWidth);
-                        alnB_seqs.scrollLeft(alnBPositionOf[focusSeq][central]*charWidth);
+                        alnB_seqs.scrollLeft(alnAPositionOf[focusSeq][central]*charWidth);
                         redisplaySparklines();
                 }
 	
@@ -529,12 +529,14 @@ function bindings(){
 			focusSeq = $(event.target).closest("div").index();
 			central = alnACharacterAt[focusSeq][$(event.target).closest("span").index() - padChars];
                         clickChar();
+                        focusCentral("A");
 		});
 	
 		alnB_seqs.bind('click', function(event) {
 			focusSeq = $(event.target).closest("div").index();
 			central = alnBCharacterAt[focusSeq][$(event.target).closest("span").index() - padChars];
                         clickChar();
+                        focusCentral("B");
 		});
                 var throttleSpeed=100;
                 $("#distanceToggle").click(function(){
@@ -729,11 +731,8 @@ function recalculateSparklines(){
 }
 redisplaySparklines = _.throttle(doRedisplaySparklines,1000);
 function doRedisplaySparklines(){
-        console.log("distance " + sparklineDistanceType);
         applyColumnDist(colDistA,alnADensity,$("#alnA_seqs"),$("#alnA_sparkline"),$("#alnA_seqs").width(),sparklineDistanceType);
-        console.log("foo");
         applyColumnDist(colDistB,alnBDensity,$("#alnB_seqs"),$("#alnB_sparkline"),$("#alnB_seqs").width(),sparklineDistanceType);
-        console.log("foo");
         /*
 
         var range = visibleRange($("#alnA_seqs"),alnA[0].content.length,alnA.length);                                                              
